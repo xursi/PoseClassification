@@ -1,7 +1,7 @@
 import os
 import pickle
 import numpy as np
-from components.PoseActionClassifier.src.utils.geometry import extract_pose_features
+from components.PoseClassification.src.utils.geometry import extract_pose_features
 
 # Eklem indeksleri referansı
 L_SHOULDER = 5
@@ -101,29 +101,3 @@ def classify_pose_geometry(keypoints, bbox, knee_threshold=130.0):
 
     # 3. Varsayılan Durum: Ayakta (standing)
     return "standing"
-
-
-def classify_pose_model(keypoints, bbox, model_path, knee_threshold=130.0):
-    """
-    Eğitilmiş bir modeli (.pkl) yükleyerek tahmin yapar. Model yoksa geometriye fallback yapar.
-    """
-    if model_path and os.path.exists(model_path):
-        try:
-            with open(model_path, 'rb') as f:
-                model = pickle.load(f)
-            
-            # Girdiyi normalize et
-            feature_vector = normalize_keypoints(keypoints, bbox)
-            
-            # Tahmini çalıştır (Modelin scikit-learn SVM/MLP Classifier olduğu varsayılır)
-            predicted_class = model.predict([feature_vector])[0]
-            
-            # Çıktı formatının geçerliliğini kontrol et
-            if predicted_class in ["standing", "sitting", "climbing"]:
-                return predicted_class
-        except Exception as e:
-            # Herhangi bir yükleme/tahmin hatasında kural tabanlıya fallback yap
-            pass
-
-    # Model dosyası yoksa veya hata oluştuysa geometrik kuralları kullan
-    return classify_pose_geometry(keypoints, bbox, knee_threshold)

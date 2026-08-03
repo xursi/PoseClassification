@@ -6,9 +6,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../'))
 
 from sdks.novavision.src.base.component import Component
 from sdks.novavision.src.helper.executor import Executor
-from components.PoseActionClassifier.src.models.PackageModel import PackageModel
-from components.PoseActionClassifier.src.utils.response import build_response_pose
-from components.PoseActionClassifier.src.utils.image_logic import classify_pose_geometry
+from components.PoseClassification.src.models.PackageModel import PackageModel
+from components.PoseClassification.src.utils.response import build_response_pose
+from components.PoseClassification.src.utils.image_logic import classify_pose_geometry
 
 
 class PoseClassifier(Component):
