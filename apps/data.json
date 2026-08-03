@@ -142,8 +142,6 @@
         },
         "value": {
           "default": 130.0,
-          "maximum": 180.0,
-          "minimum": 60.0,
           "title": "Value",
           "type": "number"
         },
@@ -160,6 +158,7 @@
           "type": "string"
         }
       },
+      "shortDescription": "Knee angle limit (60-180)",
       "title": "Knee Angle Threshold",
       "type": "object"
     },

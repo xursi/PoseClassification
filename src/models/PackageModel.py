@@ -23,12 +23,15 @@ class OutputDetections(Output):
 
 class KneeAngleThreshold(Config):
     name: Literal["kneeAngleThreshold"] = "kneeAngleThreshold"
-    value: float = Field(default=130.0, ge=60.0, le=180.0)
+    value: float = 130.0  # Yii2 form oluşturucunun hata vermemesi için düz float varsayılanı kullanıldı
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
 
     class Config:
         title = "Knee Angle Threshold"
+        json_schema_extra = {
+            "shortDescription": "Knee angle limit (60-180)"
+        }
 
 
 # Inputs, Configs and Requests for PoseClassifier
