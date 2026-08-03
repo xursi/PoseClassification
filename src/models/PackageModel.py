@@ -32,6 +32,9 @@ class KneeAngleThreshold(Config):
         json_schema_extra = {
             "shortDescription": "Knee angle limit (60-180)"
         }
+        schema_extra = {
+            "shortDescription": "Knee angle limit (60-180)"
+        }
 
 
 # Inputs, Configs and Requests for PoseClassifier
@@ -44,11 +47,14 @@ class PoseClassifierConfigs(Configs):
 
 
 class PoseClassifierRequest(Request):
-    inputs: PoseClassifierInputs
-    configs: PoseClassifierConfigs
+    inputs: Optional[PoseClassifierInputs]
+    configs: Optional[PoseClassifierConfigs]
 
     class Config:
         json_schema_extra = {
+            "target": "configs"
+        }
+        schema_extra = {
             "target": "configs"
         }
 
@@ -69,31 +75,32 @@ class PoseClassifierExecutor(Config):
 
     class Config:
         title = "Static Pose Classification"
-
-
-# Dummy Executor to force Pydantic v2 to generate an 'anyOf' schema
-class DummyExecutor(Config):
-    name: Literal["DummyExecutor"] = "DummyExecutor"
-    value: Literal["Dummy"] = "Dummy"
-    type: Literal["string"] = "string"
-    field: Literal["option"] = "option"
-
-    class Config:
-        title = "Dummy"
+        json_schema_extra = {
+            "target": {
+                "value": 0
+            }
+        }
+        schema_extra = {
+            "target": {
+                "value": 0
+            }
+        }
 
 
 # Global Capsule Configurations
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
-    value: Union[PoseClassifierExecutor, DummyExecutor]
+    value: Union[PoseClassifierExecutor]
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
     restart: Literal[True] = True
 
     class Config:
-        title = "Execution Mode"
+        title = "Task"
         json_schema_extra = {
-            "shortDescription": "Classify static poses",
+            "target": "value"
+        }
+        schema_extra = {
             "target": "value"
         }
 
@@ -104,5 +111,5 @@ class PackageConfigs(Configs):
 
 class PackageModel(Package):
     configs: PackageConfigs
-    type: Literal["capsule"] = "capsule"  # capsule tipine dönüştürüldü
+    type: Literal["capsule"] = "capsule"
     name: Literal["PoseClassification"] = "PoseClassification"

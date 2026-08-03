@@ -39,15 +39,7 @@
           "type": "string"
         },
         "value": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/PoseClassifierExecutor"
-            },
-            {
-              "$ref": "#/$defs/DummyExecutor"
-            }
-          ],
-          "title": "Value"
+          "$ref": "#/$defs/PoseClassifierExecutor"
         },
         "type": {
           "const": "executor",
@@ -71,9 +63,8 @@
       "required": [
         "value"
       ],
-      "shortDescription": "Classify static poses",
       "target": "value",
-      "title": "Execution Mode",
+      "title": "Task",
       "type": "object"
     },
     "Detection": {
@@ -109,37 +100,6 @@
         "classId"
       ],
       "title": "Detection",
-      "type": "object"
-    },
-    "DummyExecutor": {
-      "additionalProperties": true,
-      "properties": {
-        "name": {
-          "const": "DummyExecutor",
-          "default": "DummyExecutor",
-          "title": "Name",
-          "type": "string"
-        },
-        "value": {
-          "const": "Dummy",
-          "default": "Dummy",
-          "title": "Value",
-          "type": "string"
-        },
-        "type": {
-          "const": "string",
-          "default": "string",
-          "title": "Type",
-          "type": "string"
-        },
-        "field": {
-          "const": "option",
-          "default": "option",
-          "title": "Field",
-          "type": "string"
-        }
-      },
-      "title": "Dummy",
       "type": "object"
     },
     "InputDetections": {
@@ -311,6 +271,9 @@
       "required": [
         "value"
       ],
+      "target": {
+        "value": 0
+      },
       "title": "Static Pose Classification",
       "type": "object"
     },
@@ -344,10 +307,24 @@
       "additionalProperties": true,
       "properties": {
         "inputs": {
-          "$ref": "#/$defs/PoseClassifierInputs"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PoseClassifierInputs"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "configs": {
-          "$ref": "#/$defs/PoseClassifierConfigs"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PoseClassifierConfigs"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
