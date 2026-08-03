@@ -1,0 +1,39 @@
+from sdks.novavision.src.helper.package import PackageHelper
+from components.PoseActionClassifier.src.models.PackageModel import (
+    PackageModel,
+    PackageConfigs,
+    ConfigExecutor,
+    PoseClassifierOutputs,
+    PoseClassifierResponse,
+    PoseClassifierExecutor,
+    ActionClassifierOutputs,
+    ActionClassifierResponse,
+    ActionClassifierExecutor,
+    OutputDetections,
+)
+
+
+def build_response_pose(context):
+    outputDetections = OutputDetections(value=context.detections)
+    outputs = PoseClassifierOutputs(outputDetections=outputDetections)
+    response = PoseClassifierResponse(outputs=outputs)
+    executor_val = PoseClassifierExecutor(value=response)
+    executor = ConfigExecutor(value=executor_val)
+    packageConfigs = PackageConfigs(executor=executor)
+
+    package = PackageHelper(packageModel=PackageModel, packageConfigs=packageConfigs)
+    packageModel = package.build_model(context)
+    return packageModel
+
+
+def build_response_action(context):
+    outputDetections = OutputDetections(value=context.detections)
+    outputs = ActionClassifierOutputs(outputDetections=outputDetections)
+    response = ActionClassifierResponse(outputs=outputs)
+    executor_val = ActionClassifierExecutor(value=response)
+    executor = ConfigExecutor(value=executor_val)
+    packageConfigs = PackageConfigs(executor=executor)
+
+    package = PackageHelper(packageModel=PackageModel, packageConfigs=packageConfigs)
+    packageModel = package.build_model(context)
+    return packageModel
