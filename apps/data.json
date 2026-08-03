@@ -1,0 +1,404 @@
+{
+  "$defs": {
+    "BoundingBox": {
+      "additionalProperties": true,
+      "properties": {
+        "left": {
+          "title": "Left",
+          "type": "number"
+        },
+        "top": {
+          "title": "Top",
+          "type": "number"
+        },
+        "width": {
+          "title": "Width",
+          "type": "number"
+        },
+        "height": {
+          "title": "Height",
+          "type": "number"
+        }
+      },
+      "required": [
+        "left",
+        "top",
+        "width",
+        "height"
+      ],
+      "title": "BoundingBox",
+      "type": "object"
+    },
+    "ConfigExecutor": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "ConfigExecutor",
+          "default": "ConfigExecutor",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/PoseClassifierExecutor"
+        },
+        "type": {
+          "const": "executor",
+          "default": "executor",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "dependentDropdownlist",
+          "default": "dependentDropdownlist",
+          "title": "Field",
+          "type": "string"
+        },
+        "restart": {
+          "const": true,
+          "default": true,
+          "title": "Restart",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "shortDescription": "Classify static poses",
+      "target": "value",
+      "title": "Execution Mode",
+      "type": "object"
+    },
+    "Detection": {
+      "additionalProperties": true,
+      "properties": {
+        "boundingBox": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BoundingBox"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "confidence": {
+          "title": "Confidence",
+          "type": "number"
+        },
+        "classLabel": {
+          "title": "Classlabel",
+          "type": "string"
+        },
+        "classId": {
+          "title": "Classid",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "confidence",
+        "classLabel",
+        "classId"
+      ],
+      "title": "Detection",
+      "type": "object"
+    },
+    "InputDetections": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "inputDetections",
+          "default": "inputDetections",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "items": {
+            "$ref": "#/$defs/Detection"
+          },
+          "title": "Value",
+          "type": "array"
+        },
+        "type": {
+          "default": "list",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "title": "Detections",
+      "type": "object"
+    },
+    "KneeAngleThreshold": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "kneeAngleThreshold",
+          "default": "kneeAngleThreshold",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "default": 130.0,
+          "maximum": 180.0,
+          "minimum": 60.0,
+          "title": "Value",
+          "type": "number"
+        },
+        "type": {
+          "const": "number",
+          "default": "number",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "textInput",
+          "default": "textInput",
+          "title": "Field",
+          "type": "string"
+        }
+      },
+      "title": "Knee Angle Threshold",
+      "type": "object"
+    },
+    "OutputDetections": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "outputDetections",
+          "default": "outputDetections",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "items": {
+            "$ref": "#/$defs/Detection"
+          },
+          "title": "Value",
+          "type": "array"
+        },
+        "type": {
+          "default": "list",
+          "title": "Type",
+          "type": "string"
+        },
+        "listen": {
+          "const": "continuous",
+          "default": "continuous",
+          "title": "Listen",
+          "type": "string"
+        },
+        "branch": {
+          "default": "forward",
+          "enum": [
+            "forward",
+            "stop"
+          ],
+          "title": "Branch",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "title": "Detections",
+      "type": "object"
+    },
+    "PackageConfigs": {
+      "additionalProperties": true,
+      "properties": {
+        "executor": {
+          "$ref": "#/$defs/ConfigExecutor"
+        }
+      },
+      "required": [
+        "executor"
+      ],
+      "title": "PackageConfigs",
+      "type": "object"
+    },
+    "PoseClassifierConfigs": {
+      "additionalProperties": true,
+      "properties": {
+        "kneeAngleThreshold": {
+          "$ref": "#/$defs/KneeAngleThreshold",
+          "default": {
+            "name": "kneeAngleThreshold",
+            "value": 130.0,
+            "type": "number",
+            "field": "textInput"
+          }
+        }
+      },
+      "title": "PoseClassifierConfigs",
+      "type": "object"
+    },
+    "PoseClassifierExecutor": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "PoseClassifier",
+          "default": "PoseClassifier",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PoseClassifierRequest"
+            },
+            {
+              "$ref": "#/$defs/PoseClassifierResponse"
+            }
+          ],
+          "title": "Value"
+        },
+        "type": {
+          "const": "object",
+          "default": "object",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "option",
+          "default": "option",
+          "title": "Field",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "title": "Static Pose Classification",
+      "type": "object"
+    },
+    "PoseClassifierInputs": {
+      "additionalProperties": true,
+      "properties": {
+        "inputDetections": {
+          "$ref": "#/$defs/InputDetections"
+        }
+      },
+      "required": [
+        "inputDetections"
+      ],
+      "title": "PoseClassifierInputs",
+      "type": "object"
+    },
+    "PoseClassifierOutputs": {
+      "additionalProperties": true,
+      "properties": {
+        "outputDetections": {
+          "$ref": "#/$defs/OutputDetections"
+        }
+      },
+      "required": [
+        "outputDetections"
+      ],
+      "title": "PoseClassifierOutputs",
+      "type": "object"
+    },
+    "PoseClassifierRequest": {
+      "additionalProperties": true,
+      "properties": {
+        "inputs": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PoseClassifierInputs"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "configs": {
+          "$ref": "#/$defs/PoseClassifierConfigs"
+        }
+      },
+      "required": [
+        "inputs",
+        "configs"
+      ],
+      "target": "configs",
+      "title": "PoseClassifierRequest",
+      "type": "object"
+    },
+    "PoseClassifierResponse": {
+      "additionalProperties": true,
+      "properties": {
+        "outputs": {
+          "$ref": "#/$defs/PoseClassifierOutputs"
+        }
+      },
+      "required": [
+        "outputs"
+      ],
+      "title": "PoseClassifierResponse",
+      "type": "object"
+    }
+  },
+  "additionalProperties": true,
+  "properties": {
+    "type": {
+      "const": "component",
+      "default": "component",
+      "title": "Type",
+      "type": "string"
+    },
+    "name": {
+      "const": "PoseClassification",
+      "default": "PoseClassification",
+      "title": "Name",
+      "type": "string"
+    },
+    "configs": {
+      "$ref": "#/$defs/PackageConfigs"
+    },
+    "uID": {
+      "title": "Uid",
+      "type": "string"
+    },
+    "flowUID": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Flowuid"
+    },
+    "matchedID": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Matchedid"
+    },
+    "debug": {
+      "default": "False",
+      "title": "Debug",
+      "type": "string"
+    },
+    "api": {
+      "default": "False",
+      "title": "Api",
+      "type": "string"
+    }
+  },
+  "required": [
+    "configs",
+    "uID"
+  ],
+  "title": "PackageModel",
+  "type": "object"
+}
