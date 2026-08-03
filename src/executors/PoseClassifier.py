@@ -38,7 +38,7 @@ class PoseClassifier(Capsule):
             )
 
             # classLabel alanını güncelle (Örn: "person" -> "person_standing")
-            det.classLabel =  "Naber Mudur" #f"{det.classLabel}_{pose_class}"
+            det.classLabel = f"{det.classLabel}_{pose_class}"
             classified_detections.append(det)
 
         self.detections = classified_detections
