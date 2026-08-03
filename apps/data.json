@@ -39,7 +39,15 @@
           "type": "string"
         },
         "value": {
-          "$ref": "#/$defs/PoseClassifierExecutor"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PoseClassifierExecutor"
+            },
+            {
+              "$ref": "#/$defs/DummyExecutor"
+            }
+          ],
+          "title": "Value"
         },
         "type": {
           "const": "executor",
@@ -103,6 +111,37 @@
       "title": "Detection",
       "type": "object"
     },
+    "DummyExecutor": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "DummyExecutor",
+          "default": "DummyExecutor",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "const": "Dummy",
+          "default": "Dummy",
+          "title": "Value",
+          "type": "string"
+        },
+        "type": {
+          "const": "string",
+          "default": "string",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "option",
+          "default": "option",
+          "title": "Field",
+          "type": "string"
+        }
+      },
+      "title": "Dummy",
+      "type": "object"
+    },
     "InputDetections": {
       "additionalProperties": true,
       "properties": {
@@ -120,6 +159,7 @@
           "type": "array"
         },
         "type": {
+          "const": "list",
           "default": "list",
           "title": "Type",
           "type": "string"
@@ -179,6 +219,7 @@
           "type": "array"
         },
         "type": {
+          "const": "list",
           "default": "list",
           "title": "Type",
           "type": "string"
@@ -303,14 +344,7 @@
       "additionalProperties": true,
       "properties": {
         "inputs": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/PoseClassifierInputs"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "$ref": "#/$defs/PoseClassifierInputs"
         },
         "configs": {
           "$ref": "#/$defs/PoseClassifierConfigs"

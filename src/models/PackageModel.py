@@ -6,7 +6,7 @@ from sdks.novavision.src.base.model import Package, Detection, Input, Output, Co
 class InputDetections(Input):
     name: Literal["inputDetections"] = "inputDetections"
     value: List[Detection]
-    type: str = "list"
+    type: Literal["list"] = "list"
 
     class Config:
         title = "Detections"
@@ -15,7 +15,7 @@ class InputDetections(Input):
 class OutputDetections(Output):
     name: Literal["outputDetections"] = "outputDetections"
     value: List[Detection]
-    type: str = "list"
+    type: Literal["list"] = "list"
 
     class Config:
         title = "Detections"
@@ -23,7 +23,7 @@ class OutputDetections(Output):
 
 class KneeAngleThreshold(Config):
     name: Literal["kneeAngleThreshold"] = "kneeAngleThreshold"
-    value: float = 130.0  # Yii2 form oluşturucunun hata vermemesi için düz float varsayılanı kullanıldı
+    value: float = 130.0
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
 
@@ -44,7 +44,7 @@ class PoseClassifierConfigs(Configs):
 
 
 class PoseClassifierRequest(Request):
-    inputs: Optional[PoseClassifierInputs]
+    inputs: PoseClassifierInputs
     configs: PoseClassifierConfigs
 
     class Config:
@@ -71,10 +71,22 @@ class PoseClassifierExecutor(Config):
         title = "Static Pose Classification"
 
 
+# Dummy Executor to force Pydantic v2 to generate an 'anyOf' schema
+# This prevents Yii2 PHP backend from throwing 500 error when expecting a Union array.
+class DummyExecutor(Config):
+    name: Literal["DummyExecutor"] = "DummyExecutor"
+    value: Literal["Dummy"] = "Dummy"
+    type: Literal["string"] = "string"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "Dummy"
+
+
 # Global Component Configurations
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
-    value: Union[PoseClassifierExecutor]
+    value: Union[PoseClassifierExecutor, DummyExecutor]  # Union using DummyExecutor to force anyOf schema
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
     restart: Literal[True] = True
