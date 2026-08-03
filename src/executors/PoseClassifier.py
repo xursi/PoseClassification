@@ -17,16 +17,16 @@ class PoseClassifier(Component):
         self.request.model = PackageModel(**(self.request.data))
         self.detections = self.request.get_param("inputDetections")
         
-        # Konfigürasyonları oku
-        self.method = self.request.get_param("PoseMethod")
+        # Konfigürasyonları oku (Pydantic v2 çakışması nedeniyle lowercase yapıldı)
+        self.method = self.request.get_param("poseMethod")
         if isinstance(self.method, dict):
             self.method = self.method.get("value", "Geometry-Based")
 
-        self.model_path = self.request.get_param("PoseModelPath")
+        self.model_path = self.request.get_param("poseModelPath")
         if isinstance(self.model_path, dict):
             self.model_path = self.model_path.get("value", "")
 
-        self.knee_threshold = self.request.get_param("KneeAngleThreshold")
+        self.knee_threshold = self.request.get_param("kneeAngleThreshold")
         if isinstance(self.knee_threshold, dict):
             self.knee_threshold = self.knee_threshold.get("value", 130.0)
 

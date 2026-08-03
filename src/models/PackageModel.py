@@ -23,7 +23,7 @@ class OutputDetections(Output):
 
 # Configs for PoseClassifier (Static Image)
 class PoseMethod(Config):
-    name: Literal["PoseMethod"] = "PoseMethod"
+    name: Literal["poseMethod"] = "poseMethod"
     value: Literal["Geometry-Based", "Model-Based"] = "Geometry-Based"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
@@ -33,7 +33,7 @@ class PoseMethod(Config):
 
 
 class PoseModelPath(Config):
-    name: Literal["PoseModelPath"] = "PoseModelPath"
+    name: Literal["poseModelPath"] = "poseModelPath"
     value: str = ""
     type: Literal["string"] = "string"
     field: Literal["textInput"] = "textInput"
@@ -44,7 +44,7 @@ class PoseModelPath(Config):
 
 
 class KneeAngleThreshold(Config):
-    name: Literal["KneeAngleThreshold"] = "KneeAngleThreshold"
+    name: Literal["kneeAngleThreshold"] = "kneeAngleThreshold"
     value: float = Field(default=130.0, ge=60.0, le=180.0)
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
@@ -55,7 +55,7 @@ class KneeAngleThreshold(Config):
 
 # Configs for ActionClassifier (Video Buffer)
 class ActionMethod(Config):
-    name: Literal["ActionMethod"] = "ActionMethod"
+    name: Literal["actionMethod"] = "actionMethod"
     value: Literal["Geometry-Based", "Model-Based"] = "Geometry-Based"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
@@ -65,7 +65,7 @@ class ActionMethod(Config):
 
 
 class ActionModelPath(Config):
-    name: Literal["ActionModelPath"] = "ActionModelPath"
+    name: Literal["actionModelPath"] = "actionModelPath"
     value: str = ""
     type: Literal["string"] = "string"
     field: Literal["textInput"] = "textInput"
@@ -76,7 +76,7 @@ class ActionModelPath(Config):
 
 
 class VelocityThreshold(Config):
-    name: Literal["VelocityThreshold"] = "VelocityThreshold"
+    name: Literal["velocityThreshold"] = "velocityThreshold"
     value: float = Field(default=3.0, ge=0.5, le=50.0)
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
@@ -91,9 +91,9 @@ class PoseClassifierInputs(Inputs):
 
 
 class PoseClassifierConfigs(Configs):
-    PoseMethod: PoseMethod = PoseMethod()
-    PoseModelPath: PoseModelPath = PoseModelPath()
-    KneeAngleThreshold: KneeAngleThreshold = KneeAngleThreshold()
+    poseMethod: PoseMethod = PoseMethod()
+    poseModelPath: PoseModelPath = PoseModelPath()
+    kneeAngleThreshold: KneeAngleThreshold = KneeAngleThreshold()
 
 
 class PoseClassifierRequest(Request):
@@ -130,9 +130,9 @@ class ActionClassifierInputs(Inputs):
 
 
 class ActionClassifierConfigs(Configs):
-    ActionMethod: ActionMethod = ActionMethod()
-    ActionModelPath: ActionModelPath = ActionModelPath()
-    VelocityThreshold: VelocityThreshold = VelocityThreshold()
+    actionMethod: ActionMethod = ActionMethod()
+    actionModelPath: ActionModelPath = ActionModelPath()
+    velocityThreshold: VelocityThreshold = VelocityThreshold()
 
 
 class ActionClassifierRequest(Request):
@@ -165,7 +165,7 @@ class ActionClassifierExecutor(Config):
 
 # Global Component Configurations
 class ConfigExecutor(Config):
-    name: Literal["executor"] = "executor"
+    name: Literal["ConfigExecutor"] = "ConfigExecutor"
     value: Union[PoseClassifierExecutor, ActionClassifierExecutor]
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"

@@ -19,16 +19,16 @@ class ActionClassifier(Component):
         # inputDetections, Buffer paketinden gelen düzleştirilmiş (flattened) tespit listesidir.
         self.input_detections = self.request.get_param("inputDetections")
         
-        # Konfigürasyonları oku
-        self.method = self.request.get_param("ActionMethod")
+        # Konfigürasyonları oku (Pydantic v2 çakışması nedeniyle lowercase yapıldı)
+        self.method = self.request.get_param("actionMethod")
         if isinstance(self.method, dict):
             self.method = self.method.get("value", "Geometry-Based")
 
-        self.model_path = self.request.get_param("ActionModelPath")
+        self.model_path = self.request.get_param("actionModelPath")
         if isinstance(self.model_path, dict):
             self.model_path = self.model_path.get("value", "")
 
-        self.velocity_threshold = self.request.get_param("VelocityThreshold")
+        self.velocity_threshold = self.request.get_param("velocityThreshold")
         if isinstance(self.velocity_threshold, dict):
             self.velocity_threshold = self.velocity_threshold.get("value", 3.0)
 
