@@ -72,7 +72,6 @@ class PoseClassifierExecutor(Config):
 
 
 # Dummy Executor to force Pydantic v2 to generate an 'anyOf' schema
-# This prevents Yii2 PHP backend from throwing 500 error when expecting a Union array.
 class DummyExecutor(Config):
     name: Literal["DummyExecutor"] = "DummyExecutor"
     value: Literal["Dummy"] = "Dummy"
@@ -83,10 +82,10 @@ class DummyExecutor(Config):
         title = "Dummy"
 
 
-# Global Component Configurations
+# Global Capsule Configurations
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
-    value: Union[PoseClassifierExecutor, DummyExecutor]  # Union using DummyExecutor to force anyOf schema
+    value: Union[PoseClassifierExecutor, DummyExecutor]
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
     restart: Literal[True] = True
@@ -105,5 +104,5 @@ class PackageConfigs(Configs):
 
 class PackageModel(Package):
     configs: PackageConfigs
-    type: Literal["component"] = "component"
+    type: Literal["capsule"] = "capsule"  # capsule tipine dönüştürüldü
     name: Literal["PoseClassification"] = "PoseClassification"

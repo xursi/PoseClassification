@@ -1,5 +1,5 @@
 from sdks.novavision.src.helper.package import PackageHelper
-from components.PoseClassification.src.models.PackageModel import (
+from capsules.PoseClassification.src.models.PackageModel import (
     PackageModel,
     PackageConfigs,
     ConfigExecutor,

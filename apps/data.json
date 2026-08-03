@@ -375,8 +375,8 @@
   "additionalProperties": true,
   "properties": {
     "type": {
-      "const": "component",
-      "default": "component",
+      "const": "capsule",
+      "default": "capsule",
       "title": "Type",
       "type": "string"
     },

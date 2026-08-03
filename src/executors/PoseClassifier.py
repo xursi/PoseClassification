@@ -4,14 +4,14 @@ import sys
 # Proje kök dizinini ekle (Novavision sunucu yapısı için)
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../'))
 
-from sdks.novavision.src.base.component import Component
+from sdks.novavision.src.base.capsule import Capsule  # Capsule sınıfından miras alındı
 from sdks.novavision.src.helper.executor import Executor
-from components.PoseClassification.src.models.PackageModel import PackageModel
-from components.PoseClassification.src.utils.response import build_response_pose
-from components.PoseClassification.src.utils.image_logic import classify_pose_geometry
+from capsules.PoseClassification.src.models.PackageModel import PackageModel
+from capsules.PoseClassification.src.utils.response import build_response_pose
+from capsules.PoseClassification.src.utils.image_logic import classify_pose_geometry
 
 
-class PoseClassifier(Component):
+class PoseClassifier(Capsule):
     def __init__(self, request, bootstrap):
         super().__init__(request, bootstrap)
         self.request.model = PackageModel(**(self.request.data))

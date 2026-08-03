@@ -1,7 +1,7 @@
 import os
 import pickle
 import numpy as np
-from components.PoseClassification.src.utils.geometry import extract_pose_features
+from capsules.PoseClassification.src.utils.geometry import extract_pose_features
 
 # Eklem indeksleri referansı
 L_SHOULDER = 5
