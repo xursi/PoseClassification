@@ -218,11 +218,11 @@ class PoseClassifier(Capsule):
                     self.knee_threshold
                 )
 
-                # classLabel alanını güncelle
+                # classPosition alanına yazdır (classLabel değerine dokunmadan)
                 if is_dict:
-                    det["classLabel"] = f"{det.get('classLabel', 'person')}_{pose_class}"
+                    det["classPosition"] = pose_class
                 else:
-                    det.classLabel = f"{det.classLabel}_{pose_class}"
+                    det.classPosition = pose_class
 
                 classified_detections.append(det)
 

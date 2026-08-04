@@ -1,6 +1,16 @@
 from pydantic import Field
 from typing import List, Optional, Union, Literal
-from sdks.novavision.src.base.model import Package, Detection, Input, Output, Config, Inputs, Configs, Outputs, Request, Response
+from sdks.novavision.src.base.model import Package, Detection, Input, Output, Config, Inputs, Configs, Outputs, Request, Response, KeyPoints
+
+
+# KeyPoints ve Detection modellerine custom alanlar eklemek için subclass oluşturuldu
+class KeyPoints(KeyPoints):
+    confidence: Optional[float] = None
+
+
+class Detection(Detection):
+    keyPoints: Optional[List[KeyPoints]] = None
+    classPosition: Optional[str] = None  # Sınıflandırma sonucunu yazacağımız yeni parametre
 
 
 class InputDetections(Input):
@@ -9,7 +19,7 @@ class InputDetections(Input):
     type: Literal["list"] = "list"
 
     class Config:
-        title = "Detections2"
+        title = "Detections"
 
 
 class OutputDetections(Output):
@@ -47,8 +57,8 @@ class PoseClassifierConfigs(Configs):
 
 
 class PoseClassifierRequest(Request):
-    inputs: Optional[PoseClassifierInputs] = None  # Docker başlatma (bootstrap) sırasında girdi olmadığı için Optional
-    configs: PoseClassifierConfigs = PoseClassifierConfigs()  # Arayüz formunun (Yii2) çözebilmesi için doğrudan referans (Optional/anyOf kaldırıldı)
+    inputs: Optional[PoseClassifierInputs] = None
+    configs: PoseClassifierConfigs = PoseClassifierConfigs()
 
     class Config:
         json_schema_extra = {
@@ -64,7 +74,7 @@ class PoseClassifierOutputs(Outputs):
 
 
 class PoseClassifierResponse(Response):
-    outputs: PoseClassifierOutputs  # Arayüz çıkış portunun (outputDetections) çizilebilmesi için doğrudan referans (Optional/anyOf kaldırıldı)
+    outputs: PoseClassifierOutputs
 
 
 class PoseClassifierExecutor(Config):

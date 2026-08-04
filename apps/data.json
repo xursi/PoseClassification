@@ -92,6 +92,33 @@
         "classId": {
           "title": "Classid",
           "type": "integer"
+        },
+        "keyPoints": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/KeyPoints"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Keypoints"
+        },
+        "classPosition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Classposition"
         }
       },
       "required": [
@@ -129,6 +156,37 @@
         "value"
       ],
       "title": "Detections",
+      "type": "object"
+    },
+    "KeyPoints": {
+      "additionalProperties": true,
+      "properties": {
+        "cx": {
+          "title": "Cx",
+          "type": "number"
+        },
+        "cy": {
+          "title": "Cy",
+          "type": "number"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        }
+      },
+      "required": [
+        "cx",
+        "cy"
+      ],
+      "title": "KeyPoints",
       "type": "object"
     },
     "KneeAngleThreshold": {
