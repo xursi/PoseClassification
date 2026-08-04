@@ -78,7 +78,7 @@ class CustomFieldStorageID(Config):
 
 class CustomFieldStorage(Config):
     name: Literal["storageID"] = "storageID"
-    storageID: CustomFieldStorageID = CustomFieldStorageID()
+    storageID: CustomFieldStorageID  # Instantiation kaldırıldı, Yii2 PHP parser uyumluluğu için
     value: Literal["storageID"] = "storageID"
     type: Literal["object"] = "object"
     field: Literal["option"] = "option"
@@ -89,7 +89,7 @@ class CustomFieldStorage(Config):
 
 # Dropdown Hierarchies
 class ConfigGeometryBased(Config):
-    kneeAngleThreshold: KneeAngleThreshold = KneeAngleThreshold()
+    kneeAngleThreshold: KneeAngleThreshold  # Instantiation kaldırıldı, Yii2 PHP parser uyumluluğu için
     name: Literal["Geometry-Based"] = "Geometry-Based"
     value: Literal["Geometry-Based"] = "Geometry-Based"
     type: Literal["string"] = "string"
@@ -116,7 +116,7 @@ class DefaultModelName(Config):
 
 
 class PoseModelPreTrained(Config):
-    defaultModelName: DefaultModelName = DefaultModelName()
+    defaultModelName: DefaultModelName  # Instantiation kaldırıldı, Yii2 PHP parser uyumluluğu için
     name: Literal["PreTrained"] = "PreTrained"
     value: Literal["PreTrained"] = "PreTrained"
     type: Literal["string"] = "string"
@@ -127,7 +127,7 @@ class PoseModelPreTrained(Config):
 
 
 class PoseModelCustomWeight(Config):
-    customFieldStorage: CustomFieldStorage = CustomFieldStorage()
+    customFieldStorage: CustomFieldStorage  # Instantiation kaldırıldı, Yii2 PHP parser uyumluluğu için
     name: Literal["CustomWeight"] = "CustomWeight"
     value: Literal["CustomWeight"] = "CustomWeight"
     type: Literal["string"] = "string"
@@ -143,15 +143,14 @@ class PoseModelSelection(Config):
     type: Literal["object"] = "object"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
 
+    # dependentDropdownlist'in kendisi seçilebilir olduğu için target: value kaldırıldı (Yolo tarzı)
     class Config:
         title = "Model Source"
         json_schema_extra = {
-            "shortDescription": "Select where to load model weights",
-            "target": "value"
+            "shortDescription": "Select where to load model weights"
         }
         schema_extra = {
-            "shortDescription": "Select where to load model weights",
-            "target": "value"
+            "shortDescription": "Select where to load model weights"
         }
 
 
@@ -172,15 +171,14 @@ class PoseMethod(Config):
     type: Literal["object"] = "object"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
 
+    # dependentDropdownlist'in kendisi seçilebilir olduğu için target: value kaldırıldı (Yolo tarzı)
     class Config:
         title = "Classification Method"
         json_schema_extra = {
-            "shortDescription": "Select Pose Classification Method",
-            "target": "value"
+            "shortDescription": "Select Pose Classification Method"
         }
         schema_extra = {
-            "shortDescription": "Select Pose Classification Method",
-            "target": "value"
+            "shortDescription": "Select Pose Classification Method"
         }
 
 

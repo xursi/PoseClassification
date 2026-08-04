@@ -95,15 +95,12 @@
           "type": "string"
         },
         "kneeAngleThreshold": {
-          "$ref": "#/$defs/KneeAngleThreshold",
-          "default": {
-            "name": "kneeAngleThreshold",
-            "value": 130.0,
-            "type": "number",
-            "field": "textInput"
-          }
+          "$ref": "#/$defs/KneeAngleThreshold"
         }
       },
+      "required": [
+        "kneeAngleThreshold"
+      ],
       "title": "Geometry-Based",
       "type": "object"
     },
@@ -172,16 +169,12 @@
           "type": "string"
         },
         "storageID": {
-          "$ref": "#/$defs/CustomFieldStorageID",
-          "default": {
-            "name": "Id",
-            "value": 0,
-            "type": "number",
-            "field": "filePicker",
-            "restart": true
-          }
+          "$ref": "#/$defs/CustomFieldStorageID"
         }
       },
+      "required": [
+        "storageID"
+      ],
       "title": "Storage ID",
       "type": "object"
     },
@@ -627,7 +620,6 @@
         "value"
       ],
       "shortDescription": "Select Pose Classification Method",
-      "target": "value",
       "title": "Classification Method",
       "type": "object"
     },
@@ -659,22 +651,12 @@
           "type": "string"
         },
         "customFieldStorage": {
-          "$ref": "#/$defs/CustomFieldStorage",
-          "default": {
-            "name": "storageID",
-            "value": "storageID",
-            "type": "object",
-            "field": "option",
-            "storageID": {
-              "field": "filePicker",
-              "name": "Id",
-              "restart": true,
-              "type": "number",
-              "value": 0
-            }
-          }
+          "$ref": "#/$defs/CustomFieldStorage"
         }
       },
+      "required": [
+        "customFieldStorage"
+      ],
       "title": "Custom Weight",
       "type": "object"
     },
@@ -706,15 +688,12 @@
           "type": "string"
         },
         "defaultModelName": {
-          "$ref": "#/$defs/DefaultModelName",
-          "default": {
-            "name": "DefaultModelName",
-            "value": "pose_mlp_v1.pth",
-            "type": "string",
-            "field": "textInput"
-          }
+          "$ref": "#/$defs/DefaultModelName"
         }
       },
+      "required": [
+        "defaultModelName"
+      ],
       "title": "Pre-trained Model",
       "type": "object"
     },
@@ -755,7 +734,6 @@
         "value"
       ],
       "shortDescription": "Select where to load model weights",
-      "target": "value",
       "title": "Model Source",
       "type": "object"
     }
