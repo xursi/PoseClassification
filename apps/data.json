@@ -67,6 +67,200 @@
       "title": "Task",
       "type": "object"
     },
+    "ConfigGeometryBased": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "Geometry-Based",
+          "default": "Geometry-Based",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "const": "Geometry-Based",
+          "default": "Geometry-Based",
+          "title": "Value",
+          "type": "string"
+        },
+        "type": {
+          "const": "string",
+          "default": "string",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "option",
+          "default": "option",
+          "title": "Field",
+          "type": "string"
+        },
+        "kneeAngleThreshold": {
+          "$ref": "#/$defs/KneeAngleThreshold",
+          "default": {
+            "name": "kneeAngleThreshold",
+            "value": 130.0,
+            "type": "number",
+            "field": "textInput"
+          }
+        }
+      },
+      "title": "Geometry-Based",
+      "type": "object"
+    },
+    "ConfigModelBased": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "Model-Based",
+          "default": "Model-Based",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "const": "Model-Based",
+          "default": "Model-Based",
+          "title": "Value",
+          "type": "string"
+        },
+        "type": {
+          "const": "string",
+          "default": "string",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "option",
+          "default": "option",
+          "title": "Field",
+          "type": "string"
+        },
+        "poseModelSelection": {
+          "$ref": "#/$defs/PoseModelSelection"
+        }
+      },
+      "required": [
+        "poseModelSelection"
+      ],
+      "title": "Model-Based",
+      "type": "object"
+    },
+    "CustomFieldStorage": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "storageID",
+          "default": "storageID",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "const": "storageID",
+          "default": "storageID",
+          "title": "Value",
+          "type": "string"
+        },
+        "type": {
+          "const": "object",
+          "default": "object",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "option",
+          "default": "option",
+          "title": "Field",
+          "type": "string"
+        },
+        "storageID": {
+          "$ref": "#/$defs/CustomFieldStorageID",
+          "default": {
+            "name": "Id",
+            "value": 0,
+            "type": "number",
+            "field": "filePicker",
+            "restart": true
+          }
+        }
+      },
+      "title": "Storage ID",
+      "type": "object"
+    },
+    "CustomFieldStorageID": {
+      "additionalProperties": true,
+      "class": "portalium\\storage\\widgets\\FilePicker",
+      "options": {
+        "multiple": 0,
+        "name": "app::logo_wide",
+        "returnAttribute": [
+          "name"
+        ]
+      },
+      "properties": {
+        "name": {
+          "const": "Id",
+          "default": "Id",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "default": 0,
+          "title": "Value",
+          "type": "integer"
+        },
+        "type": {
+          "const": "number",
+          "default": "number",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "filePicker",
+          "default": "filePicker",
+          "title": "Field",
+          "type": "string"
+        },
+        "restart": {
+          "const": true,
+          "default": true,
+          "title": "Restart",
+          "type": "boolean"
+        }
+      },
+      "shortDescription": "File Selector",
+      "title": "Storage Source",
+      "type": "object"
+    },
+    "DefaultModelName": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "DefaultModelName",
+          "default": "DefaultModelName",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "default": "pose_mlp_v1.pth",
+          "title": "Value",
+          "type": "string"
+        },
+        "type": {
+          "const": "string",
+          "default": "string",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "textInput",
+          "default": "textInput",
+          "title": "Field",
+          "type": "string"
+        }
+      },
+      "shortDescription": "Default Pre-trained Model Weights",
+      "title": "Default Model Name",
+      "type": "object"
+    },
     "Detection": {
       "additionalProperties": true,
       "properties": {
@@ -280,16 +474,13 @@
     "PoseClassifierConfigs": {
       "additionalProperties": true,
       "properties": {
-        "kneeAngleThreshold": {
-          "$ref": "#/$defs/KneeAngleThreshold",
-          "default": {
-            "name": "kneeAngleThreshold",
-            "value": 130.0,
-            "type": "number",
-            "field": "textInput"
-          }
+        "poseMethod": {
+          "$ref": "#/$defs/PoseMethod"
         }
       },
+      "required": [
+        "poseMethod"
+      ],
       "title": "PoseClassifierConfigs",
       "type": "object"
     },
@@ -376,17 +567,12 @@
           "default": null
         },
         "configs": {
-          "$ref": "#/$defs/PoseClassifierConfigs",
-          "default": {
-            "kneeAngleThreshold": {
-              "field": "textInput",
-              "name": "kneeAngleThreshold",
-              "type": "number",
-              "value": 130.0
-            }
-          }
+          "$ref": "#/$defs/PoseClassifierConfigs"
         }
       },
+      "required": [
+        "configs"
+      ],
       "target": "configs",
       "title": "PoseClassifierRequest",
       "type": "object"
@@ -402,6 +588,175 @@
         "outputs"
       ],
       "title": "PoseClassifierResponse",
+      "type": "object"
+    },
+    "PoseMethod": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "PoseMethod",
+          "default": "PoseMethod",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ConfigGeometryBased"
+            },
+            {
+              "$ref": "#/$defs/ConfigModelBased"
+            }
+          ],
+          "title": "Value"
+        },
+        "type": {
+          "const": "object",
+          "default": "object",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "dependentDropdownlist",
+          "default": "dependentDropdownlist",
+          "title": "Field",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "shortDescription": "Select Pose Classification Method",
+      "target": "value",
+      "title": "Classification Method",
+      "type": "object"
+    },
+    "PoseModelCustomWeight": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "CustomWeight",
+          "default": "CustomWeight",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "const": "CustomWeight",
+          "default": "CustomWeight",
+          "title": "Value",
+          "type": "string"
+        },
+        "type": {
+          "const": "string",
+          "default": "string",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "option",
+          "default": "option",
+          "title": "Field",
+          "type": "string"
+        },
+        "customFieldStorage": {
+          "$ref": "#/$defs/CustomFieldStorage",
+          "default": {
+            "name": "storageID",
+            "value": "storageID",
+            "type": "object",
+            "field": "option",
+            "storageID": {
+              "field": "filePicker",
+              "name": "Id",
+              "restart": true,
+              "type": "number",
+              "value": 0
+            }
+          }
+        }
+      },
+      "title": "Custom Weight",
+      "type": "object"
+    },
+    "PoseModelPreTrained": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "PreTrained",
+          "default": "PreTrained",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "const": "PreTrained",
+          "default": "PreTrained",
+          "title": "Value",
+          "type": "string"
+        },
+        "type": {
+          "const": "string",
+          "default": "string",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "option",
+          "default": "option",
+          "title": "Field",
+          "type": "string"
+        },
+        "defaultModelName": {
+          "$ref": "#/$defs/DefaultModelName",
+          "default": {
+            "name": "DefaultModelName",
+            "value": "pose_mlp_v1.pth",
+            "type": "string",
+            "field": "textInput"
+          }
+        }
+      },
+      "title": "Pre-trained Model",
+      "type": "object"
+    },
+    "PoseModelSelection": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "PoseModelSelection",
+          "default": "PoseModelSelection",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PoseModelPreTrained"
+            },
+            {
+              "$ref": "#/$defs/PoseModelCustomWeight"
+            }
+          ],
+          "title": "Value"
+        },
+        "type": {
+          "const": "object",
+          "default": "object",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "dependentDropdownlist",
+          "default": "dependentDropdownlist",
+          "title": "Field",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "shortDescription": "Select where to load model weights",
+      "target": "value",
+      "title": "Model Source",
       "type": "object"
     }
   },
