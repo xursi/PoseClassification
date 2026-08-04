@@ -318,15 +318,15 @@
           "default": null
         },
         "configs": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/PoseClassifierConfigs"
-            },
-            {
-              "type": "null"
+          "$ref": "#/$defs/PoseClassifierConfigs",
+          "default": {
+            "kneeAngleThreshold": {
+              "field": "textInput",
+              "name": "kneeAngleThreshold",
+              "type": "number",
+              "value": 130.0
             }
-          ],
-          "default": null
+          }
         }
       },
       "target": "configs",
@@ -337,17 +337,12 @@
       "additionalProperties": true,
       "properties": {
         "outputs": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/PoseClassifierOutputs"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null
+          "$ref": "#/$defs/PoseClassifierOutputs"
         }
       },
+      "required": [
+        "outputs"
+      ],
       "title": "PoseClassifierResponse",
       "type": "object"
     }

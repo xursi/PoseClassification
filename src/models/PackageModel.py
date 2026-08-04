@@ -9,7 +9,7 @@ class InputDetections(Input):
     type: Literal["list"] = "list"
 
     class Config:
-        title = "Detections"
+        title = "Detections1"
 
 
 class OutputDetections(Output):
@@ -47,8 +47,8 @@ class PoseClassifierConfigs(Configs):
 
 
 class PoseClassifierRequest(Request):
-    inputs: Optional[PoseClassifierInputs] = None  # Pydantic v2 için varsayılan = None eklendi
-    configs: Optional[PoseClassifierConfigs] = None  # Pydantic v2 için varsayılan = None eklendi
+    inputs: Optional[PoseClassifierInputs] = None  # Docker başlatma (bootstrap) sırasında girdi olmadığı için Optional
+    configs: PoseClassifierConfigs = PoseClassifierConfigs()  # Arayüz formunun (Yii2) çözebilmesi için doğrudan referans (Optional/anyOf kaldırıldı)
 
     class Config:
         json_schema_extra = {
@@ -64,7 +64,7 @@ class PoseClassifierOutputs(Outputs):
 
 
 class PoseClassifierResponse(Response):
-    outputs: Optional[PoseClassifierOutputs] = None  # Pydantic v2 için varsayılan = None eklendi
+    outputs: PoseClassifierOutputs  # Arayüz çıkış portunun (outputDetections) çizilebilmesi için doğrudan referans (Optional/anyOf kaldırıldı)
 
 
 class PoseClassifierExecutor(Config):
