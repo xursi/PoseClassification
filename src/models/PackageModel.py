@@ -47,8 +47,8 @@ class PoseClassifierConfigs(Configs):
 
 
 class PoseClassifierRequest(Request):
-    inputs: Optional[PoseClassifierInputs]
-    configs: Optional[PoseClassifierConfigs]
+    inputs: Optional[PoseClassifierInputs] = None  # Pydantic v2 için varsayılan = None eklendi
+    configs: Optional[PoseClassifierConfigs] = None  # Pydantic v2 için varsayılan = None eklendi
 
     class Config:
         json_schema_extra = {
@@ -64,7 +64,7 @@ class PoseClassifierOutputs(Outputs):
 
 
 class PoseClassifierResponse(Response):
-    outputs: PoseClassifierOutputs
+    outputs: Optional[PoseClassifierOutputs] = None  # Pydantic v2 için varsayılan = None eklendi
 
 
 class PoseClassifierExecutor(Config):

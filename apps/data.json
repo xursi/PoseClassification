@@ -314,7 +314,8 @@
             {
               "type": "null"
             }
-          ]
+          ],
+          "default": null
         },
         "configs": {
           "anyOf": [
@@ -324,13 +325,10 @@
             {
               "type": "null"
             }
-          ]
+          ],
+          "default": null
         }
       },
-      "required": [
-        "inputs",
-        "configs"
-      ],
       "target": "configs",
       "title": "PoseClassifierRequest",
       "type": "object"
@@ -339,12 +337,17 @@
       "additionalProperties": true,
       "properties": {
         "outputs": {
-          "$ref": "#/$defs/PoseClassifierOutputs"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PoseClassifierOutputs"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
-      "required": [
-        "outputs"
-      ],
       "title": "PoseClassifierResponse",
       "type": "object"
     }
