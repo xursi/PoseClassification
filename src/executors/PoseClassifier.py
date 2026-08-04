@@ -134,11 +134,25 @@ def classify_pose_geometry(keypoints, bbox, knee_threshold=130.0):
     Matematiksel/geometrik kurallara göre statik poz sınıflandırması yapar.
     """
     kpts = []
-    for kp in keypoints:
-        if kp:
-            kpts.append({'cx': kp.cx, 'cy': kp.cy, 'confidence': kp.confidence})
-        else:
-            kpts.append(None)
+    if keypoints:
+        for kp in keypoints:
+            if kp:
+                if isinstance(kp, dict):
+                    kpts.append({
+                        'cx': kp.get('cx', 0.0), 
+                        'cy': kp.get('cy', 0.0), 
+                        'confidence': kp.get('confidence', 1.0)
+                    })
+                else:
+                    kpts.append({
+                        'cx': getattr(kp, 'cx', 0.0), 
+                        'cy': getattr(kp, 'cy', 0.0), 
+                        'confidence': getattr(kp, 'confidence', 1.0)
+                    })
+            else:
+                kpts.append(None)
+    else:
+        kpts = [None] * 17
 
     features = extract_pose_features(kpts, bbox)
 
@@ -188,17 +202,29 @@ class PoseClassifier(Capsule):
     def run(self):
         classified_detections = []
 
-        for det in self.detections:
-            # Geometrik sınıflandırmayı çalıştır (standing, sitting, climbing)
-            pose_class = classify_pose_geometry(
-                det.keyPoints, 
-                det.boundingBox, 
-                self.knee_threshold
-            )
+        if self.detections:
+            for det in self.detections:
+                # Sözlük veya nesne olma durumunu kontrol et
+                is_dict = isinstance(det, dict)
+                
+                # keyPoints ve boundingBox al
+                keypoints = det.get("keyPoints") if is_dict else getattr(det, "keyPoints", None)
+                bbox = det.get("boundingBox") if is_dict else getattr(det, "boundingBox", None)
 
-            # classLabel alanını güncelle (Örn: "person" -> "person_standing")
-            det.classLabel = f"{det.classLabel}_{pose_class}"
-            classified_detections.append(det)
+                # Geometrik sınıflandırmayı çalıştır (standing, sitting, climbing)
+                pose_class = classify_pose_geometry(
+                    keypoints, 
+                    bbox, 
+                    self.knee_threshold
+                )
+
+                # classLabel alanını güncelle
+                if is_dict:
+                    det["classLabel"] = f"{det.get('classLabel', 'person')}_{pose_class}"
+                else:
+                    det.classLabel = f"{det.classLabel}_{pose_class}"
+
+                classified_detections.append(det)
 
         self.detections = classified_detections
         return build_response_pose(context=self)

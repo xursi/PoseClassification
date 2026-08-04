@@ -9,7 +9,7 @@ class InputDetections(Input):
     type: Literal["list"] = "list"
 
     class Config:
-        title = "Detections1"
+        title = "Detections"
 
 
 class OutputDetections(Output):
