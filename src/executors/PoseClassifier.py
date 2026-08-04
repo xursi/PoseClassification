@@ -32,7 +32,21 @@ L_ANKLE = 15
 R_ANKLE = 16
 
 
-# 1. PyTorch MLP model yapısı (Eklem noktalarından duruş pozisyonu tahmin eder)
+# Sözlüklerde derinlemesine güvenli veri çekmek için yardımcı fonksiyon (NoneType çökmelerini önler)
+def safe_get(d, *keys, default=None):
+    """
+    Sözlük içinde güvenli bir şekilde derinlemesine anahtar araması yapar.
+    Girdi: safe_get(config, "configs", "executor", "name")
+    """
+    for key in keys:
+        if isinstance(d, dict):
+            d = d.get(key)
+        else:
+            return default
+    return d if d is not None else default
+
+
+# 1. PyTorch MLP model yapısı
 class PoseMLP(nn.Module):
     def __init__(self, input_dim=34, hidden_dim=64, num_classes=3):
         super(PoseMLP, self).__init__()
@@ -49,11 +63,6 @@ class PoseMLP(nn.Module):
 
 # 2. Keypoint Normalizasyonu (Shift ve Scale Invariance)
 def normalize_keypoints(keypoints, bbox):
-    """
-    Eklem noktası koordinatlarını gövde yüksekliğine ve kalça merkezine göre normalize eder.
-    Girdi: 17 eklem noktası
-    Çıktı: 34 boyutlu (17*2) normalize liste.
-    """
     coords = []
     for kp in keypoints:
         if kp:
@@ -63,11 +72,7 @@ def normalize_keypoints(keypoints, bbox):
                 coords.append([getattr(kp, 'cx', 0.0), getattr(kp, 'cy', 0.0)])
         else:
             coords.append([0.0, 0.0])
-    
-    coords = np_coords = []
-    # numpy importu yerine standart python matrisi kullanarak ek kütüphane yükünü azaltalım
-    # coords listesini numpy yerine düz matematik ile merkezleyip ölçekliyoruz
-    
+            
     # 1. Merkez Kaydırma: Kalça orta noktasını merkez yap
     l_hip = coords[L_HIP]
     r_hip = coords[R_HIP]
@@ -119,16 +124,12 @@ def normalize_keypoints(keypoints, bbox):
 
 # 3. Model Ağırlıklarını İndirme Metotları (Yolo tarzı)
 def download_weights(name_weight, storage_dir="/storage"):
-    """
-    Önceden eğitilmiş varsayılan modeli uzak sunucudan /storage klasörüne indirir.
-    """
     try:
         storage_path = Path(storage_dir) / name_weight
         if storage_path.exists():
             return str(storage_path)
         storage_path.parent.mkdir(parents=True, exist_ok=True)
         
-        # Modeli genel bir GitHub reposundan indiriyoruz
         download_url = f"https://raw.githubusercontent.com/NovavisionAI/assets/main/models/{name_weight}"
         urllib.request.urlretrieve(download_url, str(storage_path))
         return str(storage_path)
@@ -138,9 +139,6 @@ def download_weights(name_weight, storage_dir="/storage"):
 
 
 def load_storage(storageID, storage_dir="/storage"):
-    """
-    Kullanıcının Novavision arayüzünden yüklediği modeli storageID ile indirir.
-    """
     try:
         result = PackageHelper.get_storage_details(storageID)
         data = result["data"]
@@ -311,43 +309,45 @@ class PoseClassifier(Capsule):
         # Geometri parametresini oku
         self.knee_threshold = 130.0
         if self.method == "Geometry-Based":
-            val = self.pose_method_obj.get("value", {})
-            self.knee_threshold = val.get("kneeAngleThreshold", {}).get("value", 130.0)
+            knee_val = safe_get(self.pose_method_obj, "value", "kneeAngleThreshold", "value")
+            if knee_val is not None:
+                self.knee_threshold = float(knee_val)
             
         # Yüklenen modeli al
-        self.model = self.bootstrap.get("model")
+        self.model = self.bootstrap.get("model") if isinstance(self.bootstrap, dict) else None
 
     @staticmethod
     def bootstrap(config: dict) -> dict:
         bootstrap_data = {}
+        if not config:
+            return bootstrap_data
+            
         try:
-            # 1. Hangi executor çalışıyor bul
-            executor_cfg = config.get("configs", {}).get("executor", {})
-            executor_name = executor_cfg.get("name")
+            # 1. Hangi executor çalışıyor bul (Safe navigation ile)
+            executor_name = safe_get(config, "configs", "executor", "name")
             
             # Eğer PoseClassifier çalışıyorsa
             if executor_name == "PoseClassifier":
-                pose_val = executor_cfg.get("value", {}).get("value", {})
-                pose_configs = pose_val.get("configs", {})
+                pose_configs = safe_get(config, "configs", "executor", "value", "value", "configs")
+                if not pose_configs:
+                    return bootstrap_data
                 
                 # PoseMethod seçeneğini al
-                pose_method_obj = pose_configs.get("poseMethod", {})
-                method_name = pose_method_obj.get("name")
+                method_name = safe_get(pose_configs, "poseMethod", "name")
                 
                 # Eğer Model-Based seçildiyse
                 if method_name == "Model-Based":
-                    model_selection = pose_method_obj.get("value", {}).get("poseModelSelection", {})
-                    source_name = model_selection.get("name")
+                    source_name = safe_get(pose_configs, "poseMethod", "value", "poseModelSelection", "name")
                     
                     weight_path = None
                     if source_name == "CustomWeight":
                         # Custom model ID'sini al ve Novavision'dan indir
-                        storage_id = model_selection.get("value", {}).get("customFieldStorage", {}).get("value", {}).get("storageID", {}).get("value", {}).get("Id", {}).get("value")
+                        storage_id = safe_get(pose_configs, "poseMethod", "value", "poseModelSelection", "value", "customFieldStorage", "value", "storageID", "value", "Id", "value")
                         if storage_id:
                             weight_path = load_storage(storage_id)
                     else:
                         # Pre-trained model adını al ve Github'dan indir
-                        model_name = model_selection.get("value", {}).get("defaultModelName", {}).get("value", "pose_mlp_v1.pth")
+                        model_name = safe_get(pose_configs, "poseMethod", "value", "poseModelSelection", "value", "defaultModelName", "value", "pose_mlp_v1.pth")
                         weight_path = download_weights(model_name)
                     
                     if weight_path and os.path.exists(weight_path):
