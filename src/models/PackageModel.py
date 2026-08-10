@@ -62,7 +62,7 @@ class BackTiltThreshold(Config):
         }
 
 
-# Dropdown Options for PoseGeometryClassifier
+# Dropdown Options for PoseClassifier
 class PoseClassMode(Config):
     kneeAngleThreshold: KneeAngleThreshold
     name: Literal["Standard Pose Classification"] = "Standard Pose Classification"
@@ -101,18 +101,18 @@ class PoseGeometryMode(Config):
         }
 
 
-# Inputs, Configs and Requests for PoseGeometryClassifier
-class PoseGeometryClassifierInputs(Inputs):
+# Inputs, Configs and Requests for PoseClassifier
+class PoseClassifierInputs(Inputs):
     inputDetections: InputDetections
 
 
-class PoseGeometryClassifierConfigs(Configs):
+class PoseClassifierConfigs(Configs):
     poseGeometryMode: PoseGeometryMode
 
 
-class PoseGeometryClassifierRequest(Request):
-    inputs: Optional[PoseGeometryClassifierInputs] = None
-    configs: PoseGeometryClassifierConfigs
+class PoseClassifierRequest(Request):
+    inputs: Optional[PoseClassifierInputs] = None
+    configs: PoseClassifierConfigs
 
     class Config:
         json_schema_extra = {
@@ -123,17 +123,18 @@ class PoseGeometryClassifierRequest(Request):
         }
 
 
-class PoseGeometryClassifierOutputs(Outputs):
+class PoseClassifierOutputs(Outputs):
     outputDetections: OutputDetections
 
 
-class PoseGeometryClassifierResponse(Response):
-    outputs: PoseGeometryClassifierOutputs
+class PoseClassifierResponse(Response):
+    outputs: PoseClassifierOutputs
 
 
-class PoseGeometryClassifierExecutor(Config):
-    name: Literal["PoseGeometryClassifier"] = "PoseGeometryClassifier"
-    value: Union[PoseGeometryClassifierRequest, PoseGeometryClassifierResponse]
+# Veritabanında kayıtlı olan orijinal "PoseClassifier" ismine sadık kalındı
+class PoseClassifierExecutor(Config):
+    name: Literal["PoseClassifier"] = "PoseClassifier"
+    value: Union[PoseClassifierRequest, PoseClassifierResponse]
     type: Literal["object"] = "object"
     field: Literal["option"] = "option"
 
@@ -154,7 +155,7 @@ class PoseGeometryClassifierExecutor(Config):
 # Global Capsule Configurations
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
-    value: Union[PoseGeometryClassifierExecutor]
+    value: Union[PoseClassifierExecutor]
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
     restart: Literal[True] = True

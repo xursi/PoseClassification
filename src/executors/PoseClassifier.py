@@ -1,17 +1,12 @@
 import os
 import sys
 import math
-import torch
-import torch.nn as nn
-import urllib.request
-from pathlib import Path
 
 # Proje kök dizinini ekle (Novavision sunucu yapısı için)
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../'))
 
-from sdks.novavision.src.base.capsule import Capsule  # Capsule sınıfından miras alındı
+from sdks.novavision.src.base.capsule import Capsule
 from sdks.novavision.src.helper.executor import Executor
-from sdks.novavision.src.helper.package import PackageHelper
 from capsules.PoseClassification.src.models.PackageModel import PackageModel
 from capsules.PoseClassification.src.utils.response import build_response_pose
 
@@ -32,12 +27,8 @@ L_ANKLE = 15
 R_ANKLE = 16
 
 
-# Sözlüklerde derinlemesine güvenli veri çekmek için yardımcı fonksiyon (NoneType çökmelerini önler)
+# Sözlüklerden derinlemesine güvenli veri çekmek için yardımcı fonksiyon (NoneType çökmelerini önler)
 def safe_get(d, *keys, default=None):
-    """
-    Sözlük içinde güvenli bir şekilde derinlemesine anahtar araması yapar.
-    Girdi: safe_get(config, "configs", "executor", "name")
-    """
     for key in keys:
         if isinstance(d, dict):
             d = d.get(key)
@@ -46,114 +37,7 @@ def safe_get(d, *keys, default=None):
     return d if d is not None else default
 
 
-# 1. PyTorch MLP model yapısı
-class PoseMLP(nn.Module):
-    def __init__(self, input_dim=34, hidden_dim=64, num_classes=3):
-        super(PoseMLP, self).__init__()
-        self.fc1 = nn.Linear(input_dim, hidden_dim)
-        self.relu = nn.ReLU()
-        self.fc2 = nn.Linear(hidden_dim, num_classes)
-
-    def forward(self, x):
-        out = self.fc1(x)
-        out = self.relu(out)
-        out = self.fc2(out)
-        return out
-
-
-# 2. Keypoint Normalizasyonu (Shift ve Scale Invariance)
-def normalize_keypoints(keypoints, bbox):
-    coords = []
-    for kp in keypoints:
-        if kp:
-            if isinstance(kp, dict):
-                coords.append([kp.get('cx', 0.0), kp.get('cy', 0.0)])
-            else:
-                coords.append([getattr(kp, 'cx', 0.0), getattr(kp, 'cy', 0.0)])
-        else:
-            coords.append([0.0, 0.0])
-            
-    # 1. Merkez Kaydırma: Kalça orta noktasını merkez yap
-    l_hip = coords[L_HIP]
-    r_hip = coords[R_HIP]
-    
-    if isinstance(bbox, dict):
-        left = bbox.get('left', 0.0)
-        top = bbox.get('top', 0.0)
-        width = bbox.get('width', 1.0)
-        height = bbox.get('height', 1.0)
-    else:
-        left = getattr(bbox, 'left', 0.0)
-        top = getattr(bbox, 'top', 0.0)
-        width = getattr(bbox, 'width', 1.0)
-        height = getattr(bbox, 'height', 1.0)
-
-    if l_hip != [0.0, 0.0] and r_hip != [0.0, 0.0]:
-        center_x = (l_hip[0] + r_hip[0]) / 2.0
-        center_y = (l_hip[1] + r_hip[1]) / 2.0
-    else:
-        l_shoulder = coords[L_SHOULDER]
-        r_shoulder = coords[R_SHOULDER]
-        if l_shoulder != [0.0, 0.0] and r_shoulder != [0.0, 0.0]:
-            center_x = (l_shoulder[0] + r_shoulder[0]) / 2.0
-            center_y = (l_shoulder[1] + r_shoulder[1]) / 2.0
-        else:
-            center_x = left + width / 2.0
-            center_y = top + height / 2.0
-            
-    # 2. Ölçekleme: Gövde yüksekliğine böl (omuz - kalça arası dikey fark)
-    l_shoulder = coords[L_SHOULDER]
-    l_hip = coords[L_HIP]
-    
-    scale = 1.0
-    if l_shoulder != [0.0, 0.0] and l_hip != [0.0, 0.0]:
-        scale = abs(l_hip[1] - l_shoulder[1])
-        
-    if scale == 0:
-        scale = height if height > 0 else 1.0
-        
-    # Tüm koordinatları merkezleyip ölçekle
-    normalized = []
-    for c in coords:
-        norm_x = (c[0] - center_x) / scale
-        norm_y = (c[1] - center_y) / scale
-        normalized.extend([norm_x, norm_y])
-        
-    return normalized
-
-
-# 3. Model Ağırlıklarını İndirme Metotları (Yolo tarzı)
-def download_weights(name_weight, storage_dir="/storage"):
-    try:
-        storage_path = Path(storage_dir) / name_weight
-        if storage_path.exists():
-            return str(storage_path)
-        storage_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        download_url = f"https://raw.githubusercontent.com/NovavisionAI/assets/main/models/{name_weight}"
-        urllib.request.urlretrieve(download_url, str(storage_path))
-        return str(storage_path)
-    except Exception as e:
-        print(f"Default model download failed: {e}")
-        return None
-
-
-def load_storage(storageID, storage_dir="/storage"):
-    try:
-        result = PackageHelper.get_storage_details(storageID)
-        data = result["data"]
-        url_path = result["data_url"]
-        name = data["name"]
-        file_path = os.path.join(storage_dir, name)
-        
-        os.makedirs(storage_dir, exist_ok=True)
-        urllib.request.urlretrieve(url_path, file_path)
-        return file_path
-    except Exception as e:
-        print(f"Custom model download failed: {e}")
-        return None
-
-
+# Açı hesaplama fonksiyonları
 def calculate_angle(p1, p2, p3):
     if not p1 or not p2 or not p3:
         return None
@@ -180,6 +64,70 @@ def calculate_angle(p1, p2, p3):
     cosine_angle = dot_product / (magnitude_ba * magnitude_bc)
     cosine_angle = max(-1.0, min(1.0, cosine_angle))
     return round(math.degrees(math.acos(cosine_angle)), 1)
+
+
+def calculate_trunk_tilt(l_shoulder, r_shoulder, l_hip, r_hip):
+    """
+    Gövdenin (sırtın) dikey eksenle yaptığı açıyı hesaplar.
+    """
+    if not l_shoulder and not r_shoulder:
+        return 0.0
+    if not l_hip and not r_hip:
+        return 0.0
+
+    # Omuz ve kalça merkezlerini bul
+    if l_shoulder and r_shoulder:
+        sh_x = (l_shoulder[0] + r_shoulder[0]) / 2.0
+        sh_y = (l_shoulder[1] + r_shoulder[1]) / 2.0
+    else:
+        sh = l_shoulder if l_shoulder else r_shoulder
+        sh_x, sh_y = sh[0], sh[1]
+
+    if l_hip and r_hip:
+        hp_x = (l_hip[0] + r_hip[0]) / 2.0
+        hp_y = (l_hip[1] + r_hip[1]) / 2.0
+    else:
+        hp = l_hip if l_hip else r_hip
+        hp_x, hp_y = hp[0], hp[1]
+
+    dx = sh_x - hp_x
+    dy = sh_y - hp_y
+
+    magnitude = math.sqrt(dx**2 + dy**2)
+    if magnitude == 0:
+        return 0.0
+
+    # Resim koordinatlarında dikey eksen (0, -1)'dir (yukarı doğru).
+    # Bu vektör ile omuz-kalça vektörünün açısı:
+    cos_angle = -dy / magnitude
+    cos_angle = max(-1.0, min(1.0, cos_angle))
+    return math.degrees(math.acos(cos_angle))
+
+
+def calculate_neck_tilt(nose, l_shoulder, r_shoulder):
+    """
+    Boynun dikey eksenle yaptığı eğilme açısını hesaplar.
+    """
+    if not nose or (not l_shoulder and not r_shoulder):
+        return 0.0
+
+    if l_shoulder and r_shoulder:
+        sh_x = (l_shoulder[0] + r_shoulder[0]) / 2.0
+        sh_y = (l_shoulder[1] + r_shoulder[1]) / 2.0
+    else:
+        sh = l_shoulder if l_shoulder else r_shoulder
+        sh_x, sh_y = sh[0], sh[1]
+
+    dx = nose[0] - sh_x
+    dy = nose[1] - sh_y
+
+    magnitude = math.sqrt(dx**2 + dy**2)
+    if magnitude == 0:
+        return 0.0
+
+    cos_angle = -dy / magnitude
+    cos_angle = max(-1.0, min(1.0, cos_angle))
+    return math.degrees(math.acos(cos_angle))
 
 
 def is_hand_raised(wrist, shoulder, head=None):
@@ -244,6 +192,7 @@ def extract_pose_features(keypoints, bbox):
     return features
 
 
+# 1. Mod: Standart Duruş Sınıflandırma
 def classify_pose_geometry(keypoints, bbox, knee_threshold=130.0):
     kpts = []
     if keypoints:
@@ -293,6 +242,78 @@ def classify_pose_geometry(keypoints, bbox, knee_threshold=130.0):
     return "standing"
 
 
+# 2. Mod: Ergonomik Davranış / İSG Analizi (RULA/REBA Uyumlu)
+def classify_pose_ergonomics(keypoints, bbox, back_tilt_threshold=20.0):
+    kpts = []
+    if keypoints:
+        for kp in keypoints:
+            if kp:
+                if isinstance(kp, dict):
+                    kpts.append([kp.get('cx', 0.0), kp.get('cy', 0.0)])
+                else:
+                    kpts.append([getattr(kp, 'cx', 0.0), getattr(kp, 'cy', 0.0)])
+            else:
+                kpts.append([0.0, 0.0])
+    else:
+        kpts = [[0.0, 0.0]] * 17
+
+    # Noktaları çek
+    nose = kpts[NOSE] if kpts[NOSE] != [0.0, 0.0] else None
+    l_shoulder = kpts[L_SHOULDER] if kpts[L_SHOULDER] != [0.0, 0.0] else None
+    r_shoulder = kpts[R_SHOULDER] if kpts[R_SHOULDER] != [0.0, 0.0] else None
+    l_wrist = kpts[L_WRIST] if kpts[L_WRIST] != [0.0, 0.0] else None
+    r_wrist = kpts[R_WRIST] if kpts[R_WRIST] != [0.0, 0.0] else None
+    l_elbow = kpts[L_ELBOW] if kpts[L_ELBOW] != [0.0, 0.0] else None
+    r_elbow = kpts[R_ELBOW] if kpts[R_ELBOW] != [0.0, 0.0] else None
+    l_hip = kpts[L_HIP] if kpts[L_HIP] != [0.0, 0.0] else None
+    r_hip = kpts[R_HIP] if kpts[R_HIP] != [0.0, 0.0] else None
+
+    # Açıları ve kol yükselme durumlarını hesapla
+    back_tilt = calculate_trunk_tilt(l_shoulder, r_shoulder, l_hip, r_hip)
+    neck_tilt = calculate_neck_tilt(nose, l_shoulder, r_shoulder)
+    
+    l_arm_raised = False
+    if l_shoulder:
+        if l_wrist and l_wrist[1] < l_shoulder[1]:
+            l_arm_raised = True
+        if l_elbow and l_elbow[1] < l_shoulder[1]:
+            l_arm_raised = True
+            
+    r_arm_raised = False
+    if r_shoulder:
+        if r_wrist and r_wrist[1] < r_shoulder[1]:
+            r_arm_raised = True
+        if r_elbow and r_elbow[1] < r_shoulder[1]:
+            r_arm_raised = True
+            
+    arms_raised = l_arm_raised or r_arm_raised
+
+    # RULA / REBA Ergonomik Sınır Değerleri
+    # Yüksek Risk (Unsafe): Gövde eğimi > 45° VEYA Boyun eğimi > 35° VEYA Eller omuz hizası üstündeyse (Overhead Work)
+    if back_tilt > 45.0 or neck_tilt > 35.0 or arms_raised:
+        reasons = []
+        if back_tilt > 45.0:
+            reasons.append("Stooping")
+        if neck_tilt > 35.0:
+            reasons.append("Neck Bend")
+        if arms_raised:
+            reasons.append("Overhead Work")
+        return f"Unsafe ({', '.join(reasons)})"
+        
+    # Context (Warning): Gövde eğimi > back_tilt_threshold VEYA Boyun eğimi > 20°
+    elif back_tilt > back_tilt_threshold or neck_tilt > 20.0:
+        reasons = []
+        if back_tilt > back_tilt_threshold:
+            reasons.append("Mild Stooping")
+        if neck_tilt > 20.0:
+            reasons.append("Mild Neck Bend")
+        return f"Warning ({', '.join(reasons)})"
+        
+    else:
+        return "Safe"
+
+
+# Veritabanında kayıtlı olan orijinal "PoseClassifier" sınıf ismine sadık kalındı
 class PoseClassifier(Capsule):
     def __init__(self, request, bootstrap):
         super().__init__(request, bootstrap)
@@ -300,67 +321,28 @@ class PoseClassifier(Capsule):
         self.detections = self.request.get_param("inputDetections")
         
         # Konfigürasyonları oku
-        self.pose_method_obj = self.request.get_param("poseMethod")
-        self.method = "Geometry-Based"
+        self.pose_geom_mode = self.request.get_param("poseGeometryMode")
+        self.mode = "Standard Pose Classification"
         
-        if isinstance(self.pose_method_obj, dict):
-            self.method = self.pose_method_obj.get("name", "Geometry-Based")
+        if isinstance(self.pose_geom_mode, dict):
+            self.mode = self.pose_geom_mode.get("name", "Standard Pose Classification")
             
-        # Geometri parametresini oku
         self.knee_threshold = 130.0
-        if self.method == "Geometry-Based":
-            knee_val = safe_get(self.pose_method_obj, "value", "kneeAngleThreshold", "value")
-            if knee_val is not None:
-                self.knee_threshold = float(knee_val)
-            
-        # Yüklenen modeli al
-        self.model = self.bootstrap.get("model") if isinstance(self.bootstrap, dict) else None
+        self.back_tilt_threshold = 20.0
+        
+        # Mod parametrelerini oku
+        if self.mode == "Standard Pose Classification":
+            val = safe_get(self.pose_geom_mode, "value")
+            if isinstance(val, dict):
+                self.knee_threshold = safe_get(val, "kneeAngleThreshold", "value", default=130.0)
+        elif self.mode == "Ergonomic Safety Assessment":
+            val = safe_get(self.pose_geom_mode, "value")
+            if isinstance(val, dict):
+                self.back_tilt_threshold = safe_get(val, "backTiltThreshold", "value", default=20.0)
 
     @staticmethod
     def bootstrap(config: dict) -> dict:
-        bootstrap_data = {}
-        if not config:
-            return bootstrap_data
-            
-        try:
-            # 1. Hangi executor çalışıyor bul (Safe navigation ile)
-            executor_name = safe_get(config, "configs", "executor", "name")
-            
-            # Eğer PoseClassifier çalışıyorsa
-            if executor_name == "PoseClassifier":
-                pose_configs = safe_get(config, "configs", "executor", "value", "value", "configs")
-                if not pose_configs:
-                    return bootstrap_data
-                
-                # PoseMethod seçeneğini al
-                method_name = safe_get(pose_configs, "poseMethod", "name")
-                
-                # Eğer Model-Based seçildiyse
-                if method_name == "Model-Based":
-                    source_name = safe_get(pose_configs, "poseMethod", "value", "poseModelSelection", "name")
-                    
-                    weight_path = None
-                    if source_name == "CustomWeight":
-                        # Custom model ID'sini al ve Novavision'dan indir
-                        storage_id = safe_get(pose_configs, "poseMethod", "value", "poseModelSelection", "value", "customFieldStorage", "value", "storageID", "value", "Id", "value")
-                        if storage_id:
-                            weight_path = load_storage(storage_id)
-                    else:
-                        # Pre-trained model adını al ve Github'dan indir
-                        model_name = safe_get(pose_configs, "poseMethod", "value", "poseModelSelection", "value", "defaultModelName", "value", "pose_mlp_v1.pth")
-                        weight_path = download_weights(model_name)
-                    
-                    if weight_path and os.path.exists(weight_path):
-                        # PyTorch modelini yükle
-                        model = PoseMLP()
-                        model.load_state_dict(torch.load(weight_path, map_location=torch.device('cpu')))
-                        model.eval()
-                        bootstrap_data["model"] = model
-                        bootstrap_data["model_path"] = weight_path
-        except Exception as e:
-            print(f"Bootstrap failed: {e}")
-        
-        return bootstrap_data
+        return {}
 
     def run(self):
         classified_detections = []
@@ -372,30 +354,21 @@ class PoseClassifier(Capsule):
                 keypoints = det.get("keyPoints") if is_dict else getattr(det, "keyPoints", None)
                 bbox = det.get("boundingBox") if is_dict else getattr(det, "boundingBox", None)
 
-                pose_class = "standing"  # Varsayılan sınıf
-
-                # Sınıflandırma metodunu seç ve çalıştır
-                if self.method == "Model-Based" and self.model is not None:
-                    try:
-                        # Keypoint'leri normalize et
-                        norm_kpts = normalize_keypoints(keypoints, bbox)
-                        input_tensor = torch.tensor([norm_kpts], dtype=torch.float32)
-                        
-                        # Model çıkarımını yap
-                        with torch.no_grad():
-                            outputs = self.model(input_tensor)
-                            _, predicted = torch.max(outputs, 1)
-                            class_idx = predicted.item()
-                            pose_class = ["standing", "sitting", "climbing"][class_idx]
-                    except Exception as e:
-                        print(f"Model inference failed, falling back to geometry: {e}")
-                        # Model hatası durumunda kural tabanlı geometriye güvenli fallback
-                        pose_class = classify_pose_geometry(keypoints, bbox, self.knee_threshold)
+                # Seçilen geometri moduna göre çalıştır
+                if self.mode == "Ergonomic Safety Assessment":
+                    pose_class = classify_pose_ergonomics(
+                        keypoints, 
+                        bbox, 
+                        self.back_tilt_threshold
+                    )
                 else:
-                    # Kural tabanlı geometriyi çalıştır
-                    pose_class = classify_pose_geometry(keypoints, bbox, self.knee_threshold)
+                    pose_class = classify_pose_geometry(
+                        keypoints, 
+                        bbox, 
+                        self.knee_threshold
+                    )
 
-                # classPosition alanına yazdır (classLabel değerine dokunmadan)
+                # classPosition alanına sonucu yazdır
                 if is_dict:
                     det["classPosition"] = pose_class
                 else:

@@ -70,7 +70,7 @@
           "type": "string"
         },
         "value": {
-          "$ref": "#/$defs/PoseGeometryClassifierExecutor"
+          "$ref": "#/$defs/PoseClassifierExecutor"
         },
         "type": {
           "const": "executor",
@@ -382,7 +382,7 @@
       "title": "Standard Pose Classification",
       "type": "object"
     },
-    "PoseGeometryClassifierConfigs": {
+    "PoseClassifierConfigs": {
       "additionalProperties": true,
       "properties": {
         "poseGeometryMode": {
@@ -392,25 +392,25 @@
       "required": [
         "poseGeometryMode"
       ],
-      "title": "PoseGeometryClassifierConfigs",
+      "title": "PoseClassifierConfigs",
       "type": "object"
     },
-    "PoseGeometryClassifierExecutor": {
+    "PoseClassifierExecutor": {
       "additionalProperties": true,
       "properties": {
         "name": {
-          "const": "PoseGeometryClassifier",
-          "default": "PoseGeometryClassifier",
+          "const": "PoseClassifier",
+          "default": "PoseClassifier",
           "title": "Name",
           "type": "string"
         },
         "value": {
           "anyOf": [
             {
-              "$ref": "#/$defs/PoseGeometryClassifierRequest"
+              "$ref": "#/$defs/PoseClassifierRequest"
             },
             {
-              "$ref": "#/$defs/PoseGeometryClassifierResponse"
+              "$ref": "#/$defs/PoseClassifierResponse"
             }
           ],
           "title": "Value"
@@ -437,7 +437,7 @@
       "title": "Geometry Pose Classifier",
       "type": "object"
     },
-    "PoseGeometryClassifierInputs": {
+    "PoseClassifierInputs": {
       "additionalProperties": true,
       "properties": {
         "inputDetections": {
@@ -447,10 +447,10 @@
       "required": [
         "inputDetections"
       ],
-      "title": "PoseGeometryClassifierInputs",
+      "title": "PoseClassifierInputs",
       "type": "object"
     },
-    "PoseGeometryClassifierOutputs": {
+    "PoseClassifierOutputs": {
       "additionalProperties": true,
       "properties": {
         "outputDetections": {
@@ -460,16 +460,16 @@
       "required": [
         "outputDetections"
       ],
-      "title": "PoseGeometryClassifierOutputs",
+      "title": "PoseClassifierOutputs",
       "type": "object"
     },
-    "PoseGeometryClassifierRequest": {
+    "PoseClassifierRequest": {
       "additionalProperties": true,
       "properties": {
         "inputs": {
           "anyOf": [
             {
-              "$ref": "#/$defs/PoseGeometryClassifierInputs"
+              "$ref": "#/$defs/PoseClassifierInputs"
             },
             {
               "type": "null"
@@ -478,27 +478,27 @@
           "default": null
         },
         "configs": {
-          "$ref": "#/$defs/PoseGeometryClassifierConfigs"
+          "$ref": "#/$defs/PoseClassifierConfigs"
         }
       },
       "required": [
         "configs"
       ],
       "target": "configs",
-      "title": "PoseGeometryClassifierRequest",
+      "title": "PoseClassifierRequest",
       "type": "object"
     },
-    "PoseGeometryClassifierResponse": {
+    "PoseClassifierResponse": {
       "additionalProperties": true,
       "properties": {
         "outputs": {
-          "$ref": "#/$defs/PoseGeometryClassifierOutputs"
+          "$ref": "#/$defs/PoseClassifierOutputs"
         }
       },
       "required": [
         "outputs"
       ],
-      "title": "PoseGeometryClassifierResponse",
+      "title": "PoseClassifierResponse",
       "type": "object"
     },
     "PoseGeometryMode": {
