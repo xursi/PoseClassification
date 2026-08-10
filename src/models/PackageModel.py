@@ -46,154 +46,73 @@ class KneeAngleThreshold(Config):
         }
 
 
-# Custom Weight Filepicker configs (matching Yolo)
-class CustomFieldStorageID(Config):
-    name: Literal["Id"] = "Id"
-    value: int = 0
+class BackTiltThreshold(Config):
+    name: Literal["backTiltThreshold"] = "backTiltThreshold"
+    value: float = 20.0
     type: Literal["number"] = "number"
-    field: Literal["filePicker"] = "filePicker"
-    restart: Literal[True] = True
-
-    class Config:
-        title = "Storage Source"
-        json_schema_extra = {
-            "shortDescription": "File Selector",
-            "class": "portalium\\storage\\widgets\\FilePicker",
-            "options": {
-                "multiple": 0,
-                "returnAttribute": ["name"],
-                "name": "app::logo_wide"
-            }
-        }
-        schema_extra = {
-            "shortDescription": "File Selector",
-            "class": "portalium\\storage\\widgets\\FilePicker",
-            "options": {
-                "multiple": 0,
-                "returnAttribute": ["name"],
-                "name": "app::logo_wide"
-            }
-        }
-
-
-class CustomFieldStorage(Config):
-    name: Literal["storageID"] = "storageID"
-    storageID: CustomFieldStorageID  # Instantiation kaldırıldı, Yii2 PHP parser uyumluluğu için
-    value: Literal["storageID"] = "storageID"
-    type: Literal["object"] = "object"
-    field: Literal["option"] = "option"
-
-    class Config:
-        title = "Storage ID"
-
-
-# Dropdown Hierarchies
-class ConfigGeometryBased(Config):
-    kneeAngleThreshold: KneeAngleThreshold  # Instantiation kaldırıldı, Yii2 PHP parser uyumluluğu için
-    name: Literal["Geometry-Based"] = "Geometry-Based"
-    value: Literal["Geometry-Based"] = "Geometry-Based"
-    type: Literal["string"] = "string"
-    field: Literal["option"] = "option"
-
-    class Config:
-        title = "Geometry-Based"
-
-
-class DefaultModelName(Config):
-    name: Literal["DefaultModelName"] = "DefaultModelName"
-    value: str = "pose_mlp_v1.pth"
-    type: Literal["string"] = "string"
     field: Literal["textInput"] = "textInput"
 
     class Config:
-        title = "Default Model Name"
+        title = "Back Tilt Threshold"
         json_schema_extra = {
-            "shortDescription": "Default Pre-trained Model Weights"
+            "shortDescription": "Back flexion angle threshold (10-45)"
         }
         schema_extra = {
-            "shortDescription": "Default Pre-trained Model Weights"
+            "shortDescription": "Back flexion angle threshold (10-45)"
         }
 
 
-class PoseModelPreTrained(Config):
-    defaultModelName: DefaultModelName  # Instantiation kaldırıldı, Yii2 PHP parser uyumluluğu için
-    name: Literal["PreTrained"] = "PreTrained"
-    value: Literal["PreTrained"] = "PreTrained"
+# Dropdown Options for PoseGeometryClassifier
+class PoseClassMode(Config):
+    kneeAngleThreshold: KneeAngleThreshold
+    name: Literal["Standard Pose Classification"] = "Standard Pose Classification"
+    value: Literal["Standard Pose Classification"] = "Standard Pose Classification"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
 
     class Config:
-        title = "Pre-trained Model"
+        title = "Standard Pose Classification"
 
 
-class PoseModelCustomWeight(Config):
-    customFieldStorage: CustomFieldStorage  # Instantiation kaldırıldı, Yii2 PHP parser uyumluluğu için
-    name: Literal["CustomWeight"] = "CustomWeight"
-    value: Literal["CustomWeight"] = "CustomWeight"
+class ErgonomicMode(Config):
+    backTiltThreshold: BackTiltThreshold
+    name: Literal["Ergonomic Safety Assessment"] = "Ergonomic Safety Assessment"
+    value: Literal["Ergonomic Safety Assessment"] = "Ergonomic Safety Assessment"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
 
     class Config:
-        title = "Custom Weight"
+        title = "Ergonomic Safety Assessment"
 
 
-class PoseModelSelection(Config):
-    name: Literal["PoseModelSelection"] = "PoseModelSelection"
-    value: Union[PoseModelPreTrained, PoseModelCustomWeight]
+class PoseGeometryMode(Config):
+    name: Literal["poseGeometryMode"] = "poseGeometryMode"
+    value: Union[PoseClassMode, ErgonomicMode]
     type: Literal["object"] = "object"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
 
-    # dependentDropdownlist'in kendisi seçilebilir olduğu için target: value kaldırıldı (Yolo tarzı)
     class Config:
-        title = "Model Source"
+        title = "Geometry Mode"
         json_schema_extra = {
-            "shortDescription": "Select where to load model weights"
+            "shortDescription": "Select Mode of Geometry Analysis"
         }
         schema_extra = {
-            "shortDescription": "Select where to load model weights"
+            "shortDescription": "Select Mode of Geometry Analysis"
         }
 
 
-class ConfigModelBased(Config):
-    poseModelSelection: PoseModelSelection
-    name: Literal["Model-Based"] = "Model-Based"
-    value: Literal["Model-Based"] = "Model-Based"
-    type: Literal["string"] = "string"
-    field: Literal["option"] = "option"
-
-    class Config:
-        title = "Model-Based"
-
-
-class PoseMethod(Config):
-    name: Literal["PoseMethod"] = "PoseMethod"
-    value: Union[ConfigGeometryBased, ConfigModelBased]
-    type: Literal["object"] = "object"
-    field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
-
-    # dependentDropdownlist'in kendisi seçilebilir olduğu için target: value kaldırıldı (Yolo tarzı)
-    class Config:
-        title = "Classification Method"
-        json_schema_extra = {
-            "shortDescription": "Select Pose Classification Method"
-        }
-        schema_extra = {
-            "shortDescription": "Select Pose Classification Method"
-        }
-
-
-# Inputs, Configs and Requests for PoseClassifier
-class PoseClassifierInputs(Inputs):
+# Inputs, Configs and Requests for PoseGeometryClassifier
+class PoseGeometryClassifierInputs(Inputs):
     inputDetections: InputDetections
 
 
-class PoseClassifierConfigs(Configs):
-    poseMethod: PoseMethod
+class PoseGeometryClassifierConfigs(Configs):
+    poseGeometryMode: PoseGeometryMode
 
 
-class PoseClassifierRequest(Request):
-    inputs: Optional[PoseClassifierInputs] = None
-    configs: PoseClassifierConfigs
+class PoseGeometryClassifierRequest(Request):
+    inputs: Optional[PoseGeometryClassifierInputs] = None
+    configs: PoseGeometryClassifierConfigs
 
     class Config:
         json_schema_extra = {
@@ -204,22 +123,22 @@ class PoseClassifierRequest(Request):
         }
 
 
-class PoseClassifierOutputs(Outputs):
+class PoseGeometryClassifierOutputs(Outputs):
     outputDetections: OutputDetections
 
 
-class PoseClassifierResponse(Response):
-    outputs: PoseClassifierOutputs
+class PoseGeometryClassifierResponse(Response):
+    outputs: PoseGeometryClassifierOutputs
 
 
-class PoseClassifierExecutor(Config):
-    name: Literal["PoseClassifier"] = "PoseClassifier"
-    value: Union[PoseClassifierRequest, PoseClassifierResponse]
+class PoseGeometryClassifierExecutor(Config):
+    name: Literal["PoseGeometryClassifier"] = "PoseGeometryClassifier"
+    value: Union[PoseGeometryClassifierRequest, PoseGeometryClassifierResponse]
     type: Literal["object"] = "object"
     field: Literal["option"] = "option"
 
     class Config:
-        title = "Static Pose Classification"
+        title = "Geometry Pose Classifier"
         json_schema_extra = {
             "target": {
                 "value": 0
@@ -235,7 +154,7 @@ class PoseClassifierExecutor(Config):
 # Global Capsule Configurations
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
-    value: Union[PoseClassifierExecutor]
+    value: Union[PoseGeometryClassifierExecutor]
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
     restart: Literal[True] = True

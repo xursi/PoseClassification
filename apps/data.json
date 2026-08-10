@@ -1,5 +1,36 @@
 {
   "$defs": {
+    "BackTiltThreshold": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "backTiltThreshold",
+          "default": "backTiltThreshold",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "default": 20.0,
+          "title": "Value",
+          "type": "number"
+        },
+        "type": {
+          "const": "number",
+          "default": "number",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "textInput",
+          "default": "textInput",
+          "title": "Field",
+          "type": "string"
+        }
+      },
+      "shortDescription": "Back flexion angle threshold (10-45)",
+      "title": "Back Tilt Threshold",
+      "type": "object"
+    },
     "BoundingBox": {
       "additionalProperties": true,
       "properties": {
@@ -39,7 +70,7 @@
           "type": "string"
         },
         "value": {
-          "$ref": "#/$defs/PoseClassifierExecutor"
+          "$ref": "#/$defs/PoseGeometryClassifierExecutor"
         },
         "type": {
           "const": "executor",
@@ -65,193 +96,6 @@
       ],
       "target": "value",
       "title": "Task",
-      "type": "object"
-    },
-    "ConfigGeometryBased": {
-      "additionalProperties": true,
-      "properties": {
-        "name": {
-          "const": "Geometry-Based",
-          "default": "Geometry-Based",
-          "title": "Name",
-          "type": "string"
-        },
-        "value": {
-          "const": "Geometry-Based",
-          "default": "Geometry-Based",
-          "title": "Value",
-          "type": "string"
-        },
-        "type": {
-          "const": "string",
-          "default": "string",
-          "title": "Type",
-          "type": "string"
-        },
-        "field": {
-          "const": "option",
-          "default": "option",
-          "title": "Field",
-          "type": "string"
-        },
-        "kneeAngleThreshold": {
-          "$ref": "#/$defs/KneeAngleThreshold"
-        }
-      },
-      "required": [
-        "kneeAngleThreshold"
-      ],
-      "title": "Geometry-Based",
-      "type": "object"
-    },
-    "ConfigModelBased": {
-      "additionalProperties": true,
-      "properties": {
-        "name": {
-          "const": "Model-Based",
-          "default": "Model-Based",
-          "title": "Name",
-          "type": "string"
-        },
-        "value": {
-          "const": "Model-Based",
-          "default": "Model-Based",
-          "title": "Value",
-          "type": "string"
-        },
-        "type": {
-          "const": "string",
-          "default": "string",
-          "title": "Type",
-          "type": "string"
-        },
-        "field": {
-          "const": "option",
-          "default": "option",
-          "title": "Field",
-          "type": "string"
-        },
-        "poseModelSelection": {
-          "$ref": "#/$defs/PoseModelSelection"
-        }
-      },
-      "required": [
-        "poseModelSelection"
-      ],
-      "title": "Model-Based",
-      "type": "object"
-    },
-    "CustomFieldStorage": {
-      "additionalProperties": true,
-      "properties": {
-        "name": {
-          "const": "storageID",
-          "default": "storageID",
-          "title": "Name",
-          "type": "string"
-        },
-        "value": {
-          "const": "storageID",
-          "default": "storageID",
-          "title": "Value",
-          "type": "string"
-        },
-        "type": {
-          "const": "object",
-          "default": "object",
-          "title": "Type",
-          "type": "string"
-        },
-        "field": {
-          "const": "option",
-          "default": "option",
-          "title": "Field",
-          "type": "string"
-        },
-        "storageID": {
-          "$ref": "#/$defs/CustomFieldStorageID"
-        }
-      },
-      "required": [
-        "storageID"
-      ],
-      "title": "Storage ID",
-      "type": "object"
-    },
-    "CustomFieldStorageID": {
-      "additionalProperties": true,
-      "class": "portalium\\storage\\widgets\\FilePicker",
-      "options": {
-        "multiple": 0,
-        "name": "app::logo_wide",
-        "returnAttribute": [
-          "name"
-        ]
-      },
-      "properties": {
-        "name": {
-          "const": "Id",
-          "default": "Id",
-          "title": "Name",
-          "type": "string"
-        },
-        "value": {
-          "default": 0,
-          "title": "Value",
-          "type": "integer"
-        },
-        "type": {
-          "const": "number",
-          "default": "number",
-          "title": "Type",
-          "type": "string"
-        },
-        "field": {
-          "const": "filePicker",
-          "default": "filePicker",
-          "title": "Field",
-          "type": "string"
-        },
-        "restart": {
-          "const": true,
-          "default": true,
-          "title": "Restart",
-          "type": "boolean"
-        }
-      },
-      "shortDescription": "File Selector",
-      "title": "Storage Source",
-      "type": "object"
-    },
-    "DefaultModelName": {
-      "additionalProperties": true,
-      "properties": {
-        "name": {
-          "const": "DefaultModelName",
-          "default": "DefaultModelName",
-          "title": "Name",
-          "type": "string"
-        },
-        "value": {
-          "default": "pose_mlp_v1.pth",
-          "title": "Value",
-          "type": "string"
-        },
-        "type": {
-          "const": "string",
-          "default": "string",
-          "title": "Type",
-          "type": "string"
-        },
-        "field": {
-          "const": "textInput",
-          "default": "textInput",
-          "title": "Field",
-          "type": "string"
-        }
-      },
-      "shortDescription": "Default Pre-trained Model Weights",
-      "title": "Default Model Name",
       "type": "object"
     },
     "Detection": {
@@ -314,6 +158,43 @@
         "classId"
       ],
       "title": "Detection",
+      "type": "object"
+    },
+    "ErgonomicMode": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "Ergonomic Safety Assessment",
+          "default": "Ergonomic Safety Assessment",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "const": "Ergonomic Safety Assessment",
+          "default": "Ergonomic Safety Assessment",
+          "title": "Value",
+          "type": "string"
+        },
+        "type": {
+          "const": "string",
+          "default": "string",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "option",
+          "default": "option",
+          "title": "Field",
+          "type": "string"
+        },
+        "backTiltThreshold": {
+          "$ref": "#/$defs/BackTiltThreshold"
+        }
+      },
+      "required": [
+        "backTiltThreshold"
+      ],
+      "title": "Ergonomic Safety Assessment",
       "type": "object"
     },
     "InputDetections": {
@@ -464,35 +345,72 @@
       "title": "PackageConfigs",
       "type": "object"
     },
-    "PoseClassifierConfigs": {
-      "additionalProperties": true,
-      "properties": {
-        "poseMethod": {
-          "$ref": "#/$defs/PoseMethod"
-        }
-      },
-      "required": [
-        "poseMethod"
-      ],
-      "title": "PoseClassifierConfigs",
-      "type": "object"
-    },
-    "PoseClassifierExecutor": {
+    "PoseClassMode": {
       "additionalProperties": true,
       "properties": {
         "name": {
-          "const": "PoseClassifier",
-          "default": "PoseClassifier",
+          "const": "Standard Pose Classification",
+          "default": "Standard Pose Classification",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "const": "Standard Pose Classification",
+          "default": "Standard Pose Classification",
+          "title": "Value",
+          "type": "string"
+        },
+        "type": {
+          "const": "string",
+          "default": "string",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "option",
+          "default": "option",
+          "title": "Field",
+          "type": "string"
+        },
+        "kneeAngleThreshold": {
+          "$ref": "#/$defs/KneeAngleThreshold"
+        }
+      },
+      "required": [
+        "kneeAngleThreshold"
+      ],
+      "title": "Standard Pose Classification",
+      "type": "object"
+    },
+    "PoseGeometryClassifierConfigs": {
+      "additionalProperties": true,
+      "properties": {
+        "poseGeometryMode": {
+          "$ref": "#/$defs/PoseGeometryMode"
+        }
+      },
+      "required": [
+        "poseGeometryMode"
+      ],
+      "title": "PoseGeometryClassifierConfigs",
+      "type": "object"
+    },
+    "PoseGeometryClassifierExecutor": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "PoseGeometryClassifier",
+          "default": "PoseGeometryClassifier",
           "title": "Name",
           "type": "string"
         },
         "value": {
           "anyOf": [
             {
-              "$ref": "#/$defs/PoseClassifierRequest"
+              "$ref": "#/$defs/PoseGeometryClassifierRequest"
             },
             {
-              "$ref": "#/$defs/PoseClassifierResponse"
+              "$ref": "#/$defs/PoseGeometryClassifierResponse"
             }
           ],
           "title": "Value"
@@ -516,10 +434,10 @@
       "target": {
         "value": 0
       },
-      "title": "Static Pose Classification",
+      "title": "Geometry Pose Classifier",
       "type": "object"
     },
-    "PoseClassifierInputs": {
+    "PoseGeometryClassifierInputs": {
       "additionalProperties": true,
       "properties": {
         "inputDetections": {
@@ -529,10 +447,10 @@
       "required": [
         "inputDetections"
       ],
-      "title": "PoseClassifierInputs",
+      "title": "PoseGeometryClassifierInputs",
       "type": "object"
     },
-    "PoseClassifierOutputs": {
+    "PoseGeometryClassifierOutputs": {
       "additionalProperties": true,
       "properties": {
         "outputDetections": {
@@ -542,16 +460,16 @@
       "required": [
         "outputDetections"
       ],
-      "title": "PoseClassifierOutputs",
+      "title": "PoseGeometryClassifierOutputs",
       "type": "object"
     },
-    "PoseClassifierRequest": {
+    "PoseGeometryClassifierRequest": {
       "additionalProperties": true,
       "properties": {
         "inputs": {
           "anyOf": [
             {
-              "$ref": "#/$defs/PoseClassifierInputs"
+              "$ref": "#/$defs/PoseGeometryClassifierInputs"
             },
             {
               "type": "null"
@@ -560,45 +478,45 @@
           "default": null
         },
         "configs": {
-          "$ref": "#/$defs/PoseClassifierConfigs"
+          "$ref": "#/$defs/PoseGeometryClassifierConfigs"
         }
       },
       "required": [
         "configs"
       ],
       "target": "configs",
-      "title": "PoseClassifierRequest",
+      "title": "PoseGeometryClassifierRequest",
       "type": "object"
     },
-    "PoseClassifierResponse": {
+    "PoseGeometryClassifierResponse": {
       "additionalProperties": true,
       "properties": {
         "outputs": {
-          "$ref": "#/$defs/PoseClassifierOutputs"
+          "$ref": "#/$defs/PoseGeometryClassifierOutputs"
         }
       },
       "required": [
         "outputs"
       ],
-      "title": "PoseClassifierResponse",
+      "title": "PoseGeometryClassifierResponse",
       "type": "object"
     },
-    "PoseMethod": {
+    "PoseGeometryMode": {
       "additionalProperties": true,
       "properties": {
         "name": {
-          "const": "PoseMethod",
-          "default": "PoseMethod",
+          "const": "poseGeometryMode",
+          "default": "poseGeometryMode",
           "title": "Name",
           "type": "string"
         },
         "value": {
           "anyOf": [
             {
-              "$ref": "#/$defs/ConfigGeometryBased"
+              "$ref": "#/$defs/PoseClassMode"
             },
             {
-              "$ref": "#/$defs/ConfigModelBased"
+              "$ref": "#/$defs/ErgonomicMode"
             }
           ],
           "title": "Value"
@@ -619,122 +537,8 @@
       "required": [
         "value"
       ],
-      "shortDescription": "Select Pose Classification Method",
-      "title": "Classification Method",
-      "type": "object"
-    },
-    "PoseModelCustomWeight": {
-      "additionalProperties": true,
-      "properties": {
-        "name": {
-          "const": "CustomWeight",
-          "default": "CustomWeight",
-          "title": "Name",
-          "type": "string"
-        },
-        "value": {
-          "const": "CustomWeight",
-          "default": "CustomWeight",
-          "title": "Value",
-          "type": "string"
-        },
-        "type": {
-          "const": "string",
-          "default": "string",
-          "title": "Type",
-          "type": "string"
-        },
-        "field": {
-          "const": "option",
-          "default": "option",
-          "title": "Field",
-          "type": "string"
-        },
-        "customFieldStorage": {
-          "$ref": "#/$defs/CustomFieldStorage"
-        }
-      },
-      "required": [
-        "customFieldStorage"
-      ],
-      "title": "Custom Weight",
-      "type": "object"
-    },
-    "PoseModelPreTrained": {
-      "additionalProperties": true,
-      "properties": {
-        "name": {
-          "const": "PreTrained",
-          "default": "PreTrained",
-          "title": "Name",
-          "type": "string"
-        },
-        "value": {
-          "const": "PreTrained",
-          "default": "PreTrained",
-          "title": "Value",
-          "type": "string"
-        },
-        "type": {
-          "const": "string",
-          "default": "string",
-          "title": "Type",
-          "type": "string"
-        },
-        "field": {
-          "const": "option",
-          "default": "option",
-          "title": "Field",
-          "type": "string"
-        },
-        "defaultModelName": {
-          "$ref": "#/$defs/DefaultModelName"
-        }
-      },
-      "required": [
-        "defaultModelName"
-      ],
-      "title": "Pre-trained Model",
-      "type": "object"
-    },
-    "PoseModelSelection": {
-      "additionalProperties": true,
-      "properties": {
-        "name": {
-          "const": "PoseModelSelection",
-          "default": "PoseModelSelection",
-          "title": "Name",
-          "type": "string"
-        },
-        "value": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/PoseModelPreTrained"
-            },
-            {
-              "$ref": "#/$defs/PoseModelCustomWeight"
-            }
-          ],
-          "title": "Value"
-        },
-        "type": {
-          "const": "object",
-          "default": "object",
-          "title": "Type",
-          "type": "string"
-        },
-        "field": {
-          "const": "dependentDropdownlist",
-          "default": "dependentDropdownlist",
-          "title": "Field",
-          "type": "string"
-        }
-      },
-      "required": [
-        "value"
-      ],
-      "shortDescription": "Select where to load model weights",
-      "title": "Model Source",
+      "shortDescription": "Select Mode of Geometry Analysis",
+      "title": "Geometry Mode",
       "type": "object"
     }
   },
