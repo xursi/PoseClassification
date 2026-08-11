@@ -300,7 +300,7 @@ def classify_pose_ergonomics(keypoints, bbox, back_tilt_threshold=20.0):
             reasons.append("Overhead Work")
         return f"Unsafe ({', '.join(reasons)})"
         
-    # Orta Risk (Warning): Gövde eğimi > back_tilt_threshold VEYA Boyun eğimi > 20°
+    # Context (Warning): Gövde eğimi > back_tilt_threshold VEYA Boyun eğimi > 20°
     elif back_tilt > back_tilt_threshold or neck_tilt > 20.0:
         reasons = []
         if back_tilt > back_tilt_threshold:
@@ -322,7 +322,7 @@ class PoseClassifier(Capsule):
         
         # Konfigürasyonları oku
         self.pose_geom_mode = self.request.get_param("poseGeometryMode")
-        self.mode = "Standard Pose Classification"  # default
+        self.mode = "Standard Pose Classification"  
         
         if isinstance(self.pose_geom_mode, dict):
             self.mode = self.pose_geom_mode.get("name", "Standard Pose Classification")
