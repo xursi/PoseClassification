@@ -27,16 +27,6 @@ L_ANKLE = 15
 R_ANKLE = 16
 
 
-# Sözlüklerden derinlemesine güvenli veri çekmek için yardımcı fonksiyon (NoneType çökmelerini önler)
-def safe_get(d, *keys, default=None):
-    for key in keys:
-        if isinstance(d, dict):
-            d = d.get(key)
-        else:
-            return default
-    return d if d is not None else default
-
-
 # Açı hesaplama fonksiyonları
 def calculate_angle(p1, p2, p3):
     if not p1 or not p2 or not p3:
@@ -300,7 +290,7 @@ def classify_pose_ergonomics(keypoints, bbox, back_tilt_threshold=20.0):
             reasons.append("Overhead Work")
         return f"Unsafe ({', '.join(reasons)})"
         
-    # Context (Warning): Gövde eğimi > back_tilt_threshold VEYA Boyun eğimi > 20°
+    # Orta Risk (Warning): Gövde eğimi > back_tilt_threshold VEYA Boyun eğimi > 20°
     elif back_tilt > back_tilt_threshold or neck_tilt > 20.0:
         reasons = []
         if back_tilt > back_tilt_threshold:
@@ -320,25 +310,18 @@ class PoseClassifier(Capsule):
         self.request.model = PackageModel(**(self.request.data))
         self.detections = self.request.get_param("inputDetections")
         
-        # Konfigürasyonları oku
-        self.pose_geom_mode = self.request.get_param("poseGeometryMode")
-        self.mode = "Standard Pose Classification"  
-        
-        if isinstance(self.pose_geom_mode, dict):
-            self.mode = self.pose_geom_mode.get("name", "Standard Pose Classification")
+        # Modu ve parametreleri doğrudan SDK get_param yardımıyla düzleştirilmiş olarak al
+        self.mode = self.request.get_param("poseGeometryMode")
+        if not self.mode:
+            self.mode = "Standard Pose Classification"
             
-        self.knee_threshold = 130.0
-        self.back_tilt_threshold = 20.0
-        
-        # Mod parametrelerini oku
-        if self.mode == "Standard Pose Classification":
-            val = safe_get(self.pose_geom_mode, "value")
-            if isinstance(val, dict):
-                self.knee_threshold = safe_get(val, "kneeAngleThreshold", "value", default=130.0)
-        elif self.mode == "Ergonomic Safety Assessment":
-            val = safe_get(self.pose_geom_mode, "value")
-            if isinstance(val, dict):
-                self.back_tilt_threshold = safe_get(val, "backTiltThreshold", "value", default=20.0)
+        self.knee_threshold = self.request.get_param("kneeAngleThreshold")
+        if self.knee_threshold is None:
+            self.knee_threshold = 130.0
+            
+        self.back_tilt_threshold = self.request.get_param("backTiltThreshold")
+        if self.back_tilt_threshold is None:
+            self.back_tilt_threshold = 20.0
 
     @staticmethod
     def bootstrap(config: dict) -> dict:
