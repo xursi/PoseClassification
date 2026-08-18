@@ -260,7 +260,6 @@
       "required": [
         "value"
       ],
-      "target": "value",
       "title": "Task",
       "type": "object"
     },
