@@ -30,6 +30,7 @@ class OutputDetections(Output):
         title = "Detections"
 
 
+# Configuration Parameters
 class KneeAngleThreshold(Config):
     name: Literal["kneeAngleThreshold"] = "kneeAngleThreshold"
     value: float = 130.0
@@ -62,7 +63,41 @@ class BackTiltThreshold(Config):
         }
 
 
-# Dropdown Options for PoseClassifier
+class DurationThreshold(Config):
+    name: Literal["durationThreshold"] = "durationThreshold"
+    value: float = 3.0
+    type: Literal["number"] = "number"
+    field: Literal["textInput"] = "textInput"
+
+    class Config:
+        title = "Duration Threshold (seconds)"
+        json_schema_extra = {
+            "shortDescription": "Sustained risk seconds before alert (1.0 - 10.0)"
+        }
+        schema_extra = {
+            "shortDescription": "Sustained risk seconds before alert (1.0 - 10.0)"
+        }
+
+
+class VelocityThreshold(Config):
+    name: Literal["velocityThreshold"] = "velocityThreshold"
+    value: float = 0.15
+    type: Literal["number"] = "number"
+    field: Literal["textInput"] = "textInput"
+
+    class Config:
+        title = "Velocity Threshold"
+        json_schema_extra = {
+            "shortDescription": "Movement velocity threshold for walking/running (0.01 - 1.0)"
+        }
+        schema_extra = {
+            "shortDescription": "Movement velocity threshold for walking/running (0.01 - 1.0)"
+        }
+
+
+# =====================================================================
+# 1. EXECUTOR: PoseClassifier (Static Pose Geometry)
+# =====================================================================
 class PoseClassMode(Config):
     kneeAngleThreshold: KneeAngleThreshold
     name: Literal["Standard Pose Classification"] = "Standard Pose Classification"
@@ -93,15 +128,8 @@ class PoseGeometryMode(Config):
 
     class Config:
         title = "Geometry Mode"
-        json_schema_extra = {
-            "shortDescription": "Select Mode of Geometry Analysis"
-        }
-        schema_extra = {
-            "shortDescription": "Select Mode of Geometry Analysis"
-        }
 
 
-# Inputs, Configs and Requests for PoseClassifier
 class PoseClassifierInputs(Inputs):
     inputDetections: InputDetections
 
@@ -131,7 +159,6 @@ class PoseClassifierResponse(Response):
     outputs: PoseClassifierOutputs
 
 
-# Veritabanında kayıtlı olan orijinal "PoseClassifier" ismine sadık kalındı
 class PoseClassifierExecutor(Config):
     name: Literal["PoseClassifier"] = "PoseClassifier"
     value: Union[PoseClassifierRequest, PoseClassifierResponse]
@@ -139,7 +166,7 @@ class PoseClassifierExecutor(Config):
     field: Literal["option"] = "option"
 
     class Config:
-        title = "Geometry Pose Classifier"
+        title = "Pose Geometry Classifier (Static)"
         json_schema_extra = {
             "target": {
                 "value": 0
@@ -152,10 +179,98 @@ class PoseClassifierExecutor(Config):
         }
 
 
-# Global Capsule Configurations
+# =====================================================================
+# 2. EXECUTOR: ActionClassifier (Dynamic Action Geometry)
+# =====================================================================
+class StandardActionMode(Config):
+    velocityThreshold: VelocityThreshold
+    kneeAngleThreshold: KneeAngleThreshold
+    name: Literal["Standard Action Classification"] = "Standard Action Classification"
+    value: Literal["Standard Action Classification"] = "Standard Action Classification"
+    type: Literal["string"] = "string"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "Standard Action Classification"
+
+
+class ErgonomicActionMode(Config):
+    durationThreshold: DurationThreshold
+    backTiltThreshold: BackTiltThreshold
+    name: Literal["Ergonomic Safety Assessment"] = "Ergonomic Safety Assessment"
+    value: Literal["Ergonomic Safety Assessment"] = "Ergonomic Safety Assessment"
+    type: Literal["string"] = "string"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "Ergonomic Safety Assessment"
+
+
+class ActionGeometryMode(Config):
+    name: Literal["actionGeometryMode"] = "actionGeometryMode"
+    value: Union[StandardActionMode, ErgonomicActionMode]
+    type: Literal["object"] = "object"
+    field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
+
+    class Config:
+        title = "Action Mode"
+
+
+class ActionClassifierInputs(Inputs):
+    inputDetections: InputDetections
+
+
+class ActionClassifierConfigs(Configs):
+    actionGeometryMode: ActionGeometryMode
+
+
+class ActionClassifierRequest(Request):
+    inputs: Optional[ActionClassifierInputs] = None
+    configs: ActionClassifierConfigs
+
+    class Config:
+        json_schema_extra = {
+            "target": "configs"
+        }
+        schema_extra = {
+            "target": "configs"
+        }
+
+
+class ActionClassifierOutputs(Outputs):
+    outputDetections: OutputDetections
+
+
+class ActionClassifierResponse(Response):
+    outputs: ActionClassifierOutputs
+
+
+class ActionClassifierExecutor(Config):
+    name: Literal["ActionClassifier"] = "ActionClassifier"
+    value: Union[ActionClassifierRequest, ActionClassifierResponse]
+    type: Literal["object"] = "object"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "Action Geometry Classifier (Dynamic)"
+        json_schema_extra = {
+            "target": {
+                "value": 0
+            }
+        }
+        schema_extra = {
+            "target": {
+                "value": 0
+            }
+        }
+
+
+# =====================================================================
+# GLOBAL EXECUTOR CONFIGURATION
+# =====================================================================
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
-    value: Union[PoseClassifierExecutor]
+    value: Union[PoseClassifierExecutor, ActionClassifierExecutor]
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
     restart: Literal[True] = True

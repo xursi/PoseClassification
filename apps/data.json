@@ -1,5 +1,163 @@
 {
   "$defs": {
+    "ActionClassifierConfigs": {
+      "additionalProperties": true,
+      "properties": {
+        "actionGeometryMode": {
+          "$ref": "#/$defs/ActionGeometryMode"
+        }
+      },
+      "required": [
+        "actionGeometryMode"
+      ],
+      "title": "ActionClassifierConfigs",
+      "type": "object"
+    },
+    "ActionClassifierExecutor": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "ActionClassifier",
+          "default": "ActionClassifier",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ActionClassifierRequest"
+            },
+            {
+              "$ref": "#/$defs/ActionClassifierResponse"
+            }
+          ],
+          "title": "Value"
+        },
+        "type": {
+          "const": "object",
+          "default": "object",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "option",
+          "default": "option",
+          "title": "Field",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "target": {
+        "value": 0
+      },
+      "title": "Action Geometry Classifier (Dynamic)",
+      "type": "object"
+    },
+    "ActionClassifierInputs": {
+      "additionalProperties": true,
+      "properties": {
+        "inputDetections": {
+          "$ref": "#/$defs/InputDetections"
+        }
+      },
+      "required": [
+        "inputDetections"
+      ],
+      "title": "ActionClassifierInputs",
+      "type": "object"
+    },
+    "ActionClassifierOutputs": {
+      "additionalProperties": true,
+      "properties": {
+        "outputDetections": {
+          "$ref": "#/$defs/OutputDetections"
+        }
+      },
+      "required": [
+        "outputDetections"
+      ],
+      "title": "ActionClassifierOutputs",
+      "type": "object"
+    },
+    "ActionClassifierRequest": {
+      "additionalProperties": true,
+      "properties": {
+        "inputs": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ActionClassifierInputs"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "configs": {
+          "$ref": "#/$defs/ActionClassifierConfigs"
+        }
+      },
+      "required": [
+        "configs"
+      ],
+      "target": "configs",
+      "title": "ActionClassifierRequest",
+      "type": "object"
+    },
+    "ActionClassifierResponse": {
+      "additionalProperties": true,
+      "properties": {
+        "outputs": {
+          "$ref": "#/$defs/ActionClassifierOutputs"
+        }
+      },
+      "required": [
+        "outputs"
+      ],
+      "title": "ActionClassifierResponse",
+      "type": "object"
+    },
+    "ActionGeometryMode": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "actionGeometryMode",
+          "default": "actionGeometryMode",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StandardActionMode"
+            },
+            {
+              "$ref": "#/$defs/ErgonomicActionMode"
+            }
+          ],
+          "title": "Value"
+        },
+        "type": {
+          "const": "object",
+          "default": "object",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "dependentDropdownlist",
+          "default": "dependentDropdownlist",
+          "title": "Field",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "title": "Action Mode",
+      "type": "object"
+    },
     "BackTiltThreshold": {
       "additionalProperties": true,
       "properties": {
@@ -70,7 +228,15 @@
           "type": "string"
         },
         "value": {
-          "$ref": "#/$defs/PoseClassifierExecutor"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PoseClassifierExecutor"
+            },
+            {
+              "$ref": "#/$defs/ActionClassifierExecutor"
+            }
+          ],
+          "title": "Value"
         },
         "type": {
           "const": "executor",
@@ -158,6 +324,78 @@
         "classId"
       ],
       "title": "Detection",
+      "type": "object"
+    },
+    "DurationThreshold": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "durationThreshold",
+          "default": "durationThreshold",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "default": 3.0,
+          "title": "Value",
+          "type": "number"
+        },
+        "type": {
+          "const": "number",
+          "default": "number",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "textInput",
+          "default": "textInput",
+          "title": "Field",
+          "type": "string"
+        }
+      },
+      "shortDescription": "Sustained risk seconds before alert (1.0 - 10.0)",
+      "title": "Duration Threshold (seconds)",
+      "type": "object"
+    },
+    "ErgonomicActionMode": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "Ergonomic Safety Assessment",
+          "default": "Ergonomic Safety Assessment",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "const": "Ergonomic Safety Assessment",
+          "default": "Ergonomic Safety Assessment",
+          "title": "Value",
+          "type": "string"
+        },
+        "type": {
+          "const": "string",
+          "default": "string",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "option",
+          "default": "option",
+          "title": "Field",
+          "type": "string"
+        },
+        "durationThreshold": {
+          "$ref": "#/$defs/DurationThreshold"
+        },
+        "backTiltThreshold": {
+          "$ref": "#/$defs/BackTiltThreshold"
+        }
+      },
+      "required": [
+        "durationThreshold",
+        "backTiltThreshold"
+      ],
+      "title": "Ergonomic Safety Assessment",
       "type": "object"
     },
     "ErgonomicMode": {
@@ -434,7 +672,7 @@
       "target": {
         "value": 0
       },
-      "title": "Geometry Pose Classifier",
+      "title": "Pose Geometry Classifier (Static)",
       "type": "object"
     },
     "PoseClassifierInputs": {
@@ -537,8 +775,79 @@
       "required": [
         "value"
       ],
-      "shortDescription": "Select Mode of Geometry Analysis",
       "title": "Geometry Mode",
+      "type": "object"
+    },
+    "StandardActionMode": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "Standard Action Classification",
+          "default": "Standard Action Classification",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "const": "Standard Action Classification",
+          "default": "Standard Action Classification",
+          "title": "Value",
+          "type": "string"
+        },
+        "type": {
+          "const": "string",
+          "default": "string",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "option",
+          "default": "option",
+          "title": "Field",
+          "type": "string"
+        },
+        "velocityThreshold": {
+          "$ref": "#/$defs/VelocityThreshold"
+        },
+        "kneeAngleThreshold": {
+          "$ref": "#/$defs/KneeAngleThreshold"
+        }
+      },
+      "required": [
+        "velocityThreshold",
+        "kneeAngleThreshold"
+      ],
+      "title": "Standard Action Classification",
+      "type": "object"
+    },
+    "VelocityThreshold": {
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "const": "velocityThreshold",
+          "default": "velocityThreshold",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "default": 0.15,
+          "title": "Value",
+          "type": "number"
+        },
+        "type": {
+          "const": "number",
+          "default": "number",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "const": "textInput",
+          "default": "textInput",
+          "title": "Field",
+          "type": "string"
+        }
+      },
+      "shortDescription": "Movement velocity threshold for walking/running (0.01 - 1.0)",
+      "title": "Velocity Threshold",
       "type": "object"
     }
   },
